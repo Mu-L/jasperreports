@@ -23,150 +23,102 @@
  */
 package net.sf.jasperreports.engine.part;
 
+import java.util.function.Supplier;
+
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.engine.fill.PartReportFiller;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  */
-public class FillPrintPartQueue
+public class FillPrintPartQueue implements FillPartQueue
 {
-	public static final String EXCEPTION_MESSAGE_KEY_CANNOT_REMOVE_HEAD_PART = "engine.part.queue.cannot.remove.head.part";
-	public static final String EXCEPTION_MESSAGE_KEY_CANNOT_REPLACE_HEAD_PART = "engine.part.queue.cannot.replace.head.part";
 
-	private FillPrintPart head;
-	private FillPrintPart tail;
+	private PrintPartList partList;
 	
 	public FillPrintPartQueue(PartPrintOutput output)
 	{
-		this.head = this.tail = new FilledPrintPart(output);
+		FilledPrintPart initialPart = new FilledPrintPart(output);
+		this.partList = new PrintPartList(initialPart);
 	}
 
+	@Override
 	public FillPrintPart head()
 	{
-		return head;
+		return partList.head();
+	}
+
+	@Override
+	public void beforeEvaluate(FillPart part) 
+	{
+		//NOOP
 	}
 	
-	public FillPrintPart tail()
+	@Override
+	public void finishParts()
 	{
-		return tail;
+		assert partList.isCollapsed();
 	}
 
-	public boolean isCollapsed()
+	@Override
+	public void fillPart(FillPart fillPart, EvaluatedPart evaluatedPart, Supplier<PartPrintOutput> localOutputSupplier) throws JRException
 	{
-		return head == tail;
+		PartPrintOutput appendOutput = partList.tail().getOutput();
+		if (appendOutput != null)
+		{
+			// can write directly to the previous output
+			fillPart.fill(evaluatedPart, appendOutput);
+		}
+		else
+		{
+			// previous part is delayed, creating a new part with local output
+			PartPrintOutput localOutput = localOutputSupplier.get();
+			fillPart.fill(evaluatedPart, localOutput);
+			
+			// adding to the queue
+			appendOutput(localOutput);
+		}
 	}
-
-	public FilledPrintPart appendOutput(PartPrintOutput output)
+	
+	protected FilledPrintPart appendOutput(PartPrintOutput output)
 	{
 		FilledPrintPart filledPart = new FilledPrintPart(output);
-		append(filledPart);
+		partList.append(filledPart);
 		return filledPart;
 	}
 
+	@Override
 	public DelayedPrintPart appendDelayed(FillPart fillPart)
 	{
 		DelayedPrintPart delayedPart = new DelayedPrintPart(fillPart);
-		append(delayedPart);
+		partList.append(delayedPart);
 		return delayedPart;
 	}
-	
-	protected void append(FillPrintPart part)
-	{
-		part.setPreviousPart(tail);
-		tail.setNextPart(part);
-		tail = part;
-	}
 
-	public void fillDelayed(DelayedPrintPart part, PartReportFiller filler, byte evaluation) throws JRException
+	@Override
+	public void fillDelayed(DelayedPrintPart part, EvaluatedPart evaluatedPart, Supplier<PartPrintOutput> localOutputSupplier) throws JRException
 	{
 		PartPrintOutput appendOutput = part.previousPart().getOutput();
+		FillPart fillPart = part.getFillPart();
 		if (appendOutput != null)
 		{
-			part.getFillPart().fill(evaluation, appendOutput);
-			remove(part);
-			collapse(part.previousPart());
+			fillPart.fill(evaluatedPart, appendOutput);
+			partList.remove(part);
+			partList.collapse(part.previousPart());
 		}
 		else
 		{
-			FillPartPrintOutput localOutput = new FillPartPrintOutput(filler);
-			part.getFillPart().fill(evaluation, localOutput);
+			PartPrintOutput localOutput = localOutputSupplier.get();
+			fillPart.fill(evaluatedPart, localOutput);
 			FilledPrintPart filledPart = new FilledPrintPart(localOutput);
-			replace(part, filledPart);
-			collapse(filledPart);
+			partList.replace(part, filledPart);
+			partList.collapse(filledPart);
 		}
 	}
 	
-	protected void remove(DelayedPrintPart part)
+	@Override
+	public void dispose()
 	{
-		if (part == head)
-		{
-			throw 
-				new JRRuntimeException(
-					EXCEPTION_MESSAGE_KEY_CANNOT_REMOVE_HEAD_PART,
-					(Object[])null);
-		}
-		
-		part.previousPart().setNextPart(part.nextPart());
-		
-		if (part == tail)
-		{
-			tail = part.previousPart();
-		}
-		else
-		{
-			part.nextPart().setPreviousPart(part.previousPart());
-		}
-		
-	}
-
-	protected void replace(FillPrintPart originalPart, FillPrintPart newPart)
-	{
-		if (originalPart == head)
-		{
-			throw 
-				new JRRuntimeException(
-					EXCEPTION_MESSAGE_KEY_CANNOT_REPLACE_HEAD_PART,
-					(Object[])null);
-		}
-		
-		newPart.setPreviousPart(originalPart.previousPart());
-		newPart.setNextPart(originalPart.nextPart());
-		
-		originalPart.previousPart().setNextPart(newPart);
-		
-		if (originalPart == tail)
-		{
-			tail = newPart;
-		}
-		else
-		{
-			originalPart.nextPart().setPreviousPart(newPart);
-		}
+		//NOOP
 	}
 	
-	protected void collapse(FillPrintPart part)
-	{
-		PartPrintOutput output = part.getOutput();
-		FillPrintPart next = part.nextPart();
-		while (next != null && next.getOutput() != null)
-		{
-			FillPartPrintOutput nextOutput = (FillPartPrintOutput) next.getOutput();
-			output.append(nextOutput);
-			nextOutput.getDelayedActions().dispose();
-			
-			next = next.nextPart();
-		}
-		
-		part.setNextPart(next);
-		if (next == null)
-		{
-			tail = part;
-		}
-		else
-		{
-			next.setPreviousPart(part);
-		}
-	}
 }
