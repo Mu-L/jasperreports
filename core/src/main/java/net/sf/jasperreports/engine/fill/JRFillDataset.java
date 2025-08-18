@@ -1320,7 +1320,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 		{
 			if (filler != null)
 			{
-				filler.fillContext.clearRunningQueryExecuter();
+				filler.fillContext.clearRunningQueryExecuter(queryExecuter);
 			}
 		}
 	}

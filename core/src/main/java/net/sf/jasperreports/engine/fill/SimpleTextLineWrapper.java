@@ -254,12 +254,8 @@ public class SimpleTextLineWrapper implements TextLineWrapper
 			JRFillContext fillContext = fillElement.getFiller().getFillContext();
 			elementFontKey = new Pair<>(fillElement.getUUID(), fontKey);
 			
-			elementFontInfos = (Map<Pair<UUID, FontKey>, ElementFontInfo>) fillContext.getFillCache(FILL_CACHE_KEY_ELEMENT_FONT_INFOS);
-			if (elementFontInfos == null)
-			{
-				elementFontInfos = createElementFontInfosFillCache();
-				fillContext.setFillCache(FILL_CACHE_KEY_ELEMENT_FONT_INFOS, elementFontInfos);
-			}
+			elementFontInfos = fillContext.getFillCache(FILL_CACHE_KEY_ELEMENT_FONT_INFOS,
+					this::createElementFontInfosFillCache);
 
 			fontInfo = elementFontInfos.get(elementFontKey);
 		}
@@ -318,12 +314,8 @@ public class SimpleTextLineWrapper implements TextLineWrapper
 			JRFillElement fillElement = (JRFillElement) context.getElement();
 			JRFillContext fillContext = fillElement.getFiller().getFillContext();
 			
-			generalFontInfos = (Map<FontKey, FontInfo>) fillContext.getFillCache(FILL_CACHE_KEY_GENERAL_FONT_INFOS);
-			if (generalFontInfos == null)
-			{
-				generalFontInfos = new HashMap<>();
-				fillContext.setFillCache(FILL_CACHE_KEY_GENERAL_FONT_INFOS, generalFontInfos);
-			}
+			generalFontInfos = fillContext.getFillCache(FILL_CACHE_KEY_GENERAL_FONT_INFOS,
+					HashMap<FontKey, FontInfo>::new);
 			
 			generalFontInfo = generalFontInfos.get(fontKey);			
 		}

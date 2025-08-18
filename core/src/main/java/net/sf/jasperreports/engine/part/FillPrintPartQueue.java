@@ -121,4 +121,10 @@ public class FillPrintPartQueue implements FillPartQueue
 		//NOOP
 	}
 	
+	@Override
+	public void cancelParts()
+	{
+		//NOOP
+	}
+	
 }

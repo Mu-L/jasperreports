@@ -970,13 +970,8 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 	protected int getChunkIndex()
 	{
 		JRFillContext fillerContext = filler.getFillContext();
-		AtomicInteger counter = (AtomicInteger) fillerContext.getFillCache(FILL_CACHE_KEY_CROSSTAB_CHUNK_COUNTER);
-		if (counter == null)
-		{
-			// we just need a mutable integer, there's no actual concurrency here
-			counter = new AtomicInteger();
-			fillerContext.setFillCache(FILL_CACHE_KEY_CROSSTAB_CHUNK_COUNTER, counter);
-		}
+		AtomicInteger counter = fillerContext.getFillCache(FILL_CACHE_KEY_CROSSTAB_CHUNK_COUNTER,
+				AtomicInteger::new);
 		
 		int chunkIndex = counter.getAndIncrement();
 		return chunkIndex;

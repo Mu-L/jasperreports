@@ -56,7 +56,7 @@ public class RenderersCache
 	/**
 	 * 
 	 */
-	public Renderable getLoadedRenderer(ResourceRenderer resourceRenderer) throws JRException
+	public synchronized Renderable getLoadedRenderer(ResourceRenderer resourceRenderer) throws JRException
 	{
 		Renderable loadedRenderer;
 		String resourceRendererId = resourceRenderer.getId();
@@ -139,7 +139,7 @@ public class RenderersCache
 	/**
 	 * 
 	 */
-	public Renderable getWrappingRenderable(String rendererId, DataRenderable dataRenderer) throws JRException
+	public synchronized Renderable getWrappingRenderable(String rendererId, DataRenderable dataRenderer) throws JRException
 	{
 		Renderable wrappingRenderer = null;
 		

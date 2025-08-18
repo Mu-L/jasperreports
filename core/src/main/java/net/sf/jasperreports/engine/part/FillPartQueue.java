@@ -48,4 +48,6 @@ public interface FillPartQueue
 
 	void dispose();
 
+	void cancelParts();
+
 }

@@ -157,7 +157,7 @@ public class RendererUtil
 	/**
 	 *
 	 */
-	public SvgDataSniffer getSvgDataSniffer()
+	public synchronized SvgDataSniffer getSvgDataSniffer()
 	{
 		if (svgDataSniffer == null)
 		{

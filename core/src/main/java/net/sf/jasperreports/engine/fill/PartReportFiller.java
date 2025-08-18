@@ -498,6 +498,14 @@ public class PartReportFiller extends BaseReportFiller
 		
 		return ((JasperPrintPartOutput) partQueue.head().getOutput()).isPageFinal(pageIndex);
 	}
+	
+	@Override
+	public void cancelFill() throws JRException
+	{
+		super.cancelFill();
+		
+		partQueue.cancelParts();
+	}
 
 	protected void partPageUpdated(int pageIndex)
 	{
