@@ -36,7 +36,7 @@ public interface FillPartQueue
 
 	FillPrintPart head();
 
-	void beforeEvaluate(FillPart part);
+	void beforeEvaluate(FillPart part) throws JRException;
 	
 	void fillPart(FillPart fillPart, EvaluatedPart evaluatedPart, Supplier<PartPrintOutput> localOutputSupplier) throws JRException;
 
@@ -44,7 +44,7 @@ public interface FillPartQueue
 
 	void fillDelayed(DelayedPrintPart part, EvaluatedPart evaluatedPart, Supplier<PartPrintOutput> localOutputSupplier) throws JRException;
 	
-	void finishParts();
+	void finishParts() throws JRException;
 
 	void dispose();
 
