@@ -78,7 +78,7 @@ public class JRFillContext
 	
 	private static final JRSingletonCache<MarkupProcessorFactory> markupProcessorFactoryCache = 
 			new JRSingletonCache<>(MarkupProcessorFactory.class);
-	private final Map<String,MarkupProcessor> markupProcessors = new HashMap<>();
+	private final Map<String, MarkupProcessorFactory> markupProcessorFactories = new HashMap<>();
 
 	private final BaseReportFiller masterFiller;
 	
@@ -497,11 +497,11 @@ public class JRFillContext
 	/**
 	 * 
 	 */
-	protected MarkupProcessor getMarkupProcessor(String markup)
+	protected MarkupProcessorFactory getMarkupProcessorFactory(String markup)
 	{
-		MarkupProcessor markupProcessor = markupProcessors.get(markup);
+		MarkupProcessorFactory factory = markupProcessorFactories.get(markup);
 		
-		if (markupProcessor == null)
+		if (factory == null)
 		{
 			String factoryClass = masterFiller.getPropertiesUtil().getProperty(MarkupProcessorFactory.PROPERTY_MARKUP_PROCESSOR_FACTORY_PREFIX + markup);
 			if (factoryClass == null)
@@ -513,7 +513,6 @@ public class JRFillContext
 						);
 			}
 
-			MarkupProcessorFactory factory = null;
 			try
 			{
 				factory = markupProcessorFactoryCache.getCachedInstance(factoryClass);
@@ -523,10 +522,15 @@ public class JRFillContext
 				throw new JRRuntimeException(e);
 			}
 			
-			markupProcessor = factory.createMarkupProcessor();
-			markupProcessors.put(markup, markupProcessor);
+			markupProcessorFactories.put(markup, factory);
 		}
-		
+		return factory;
+	}
+
+	protected synchronized MarkupProcessor getMarkupProcessor(String markup)
+	{
+		MarkupProcessorFactory factory = getMarkupProcessorFactory(markup);
+		MarkupProcessor markupProcessor = factory.createMarkupProcessor();
 		return markupProcessor;
 	}
 
