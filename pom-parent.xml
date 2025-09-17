@@ -122,7 +122,7 @@
 		-->
 		<ant.version>1.10.14</ant.version>
 		<antlr.version>2.7.7</antlr.version>
-		<batik.version>1.18</batik.version>
+		<batik.version>1.19</batik.version>
 		<castor.version>1.4.1</castor.version>
 		<commons-beanutils2.version>2.0.0-M2</commons-beanutils2.version>
 		<commons-collections4.version>4.5.0</commons-collections4.version>
@@ -140,7 +140,7 @@
 		<openpdf.version>1.3.43</openpdf.version>
 		<poi.version>5.4.1</poi.version>
 		<rhino.version>1.7.14</rhino.version>
-		<spring.version>6.2.3</spring.version>
+		<spring.version>6.2.11</spring.version>
 		<xchart.version>3.2.2</xchart.version>
 		<xml-apis-ext.version>1.3.04</xml-apis-ext.version>
 	</properties>
