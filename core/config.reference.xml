@@ -3191,6 +3191,15 @@ The property itself defaults to <code>false</code>.
   </configProperty>
   
   
+  <!-- net.sf.jasperreports.export.docx.size.page.to.content -->
+  
+  <configProperty name="net.sf.jasperreports.export.docx.size.page.to.content">
+    <description>
+Property which specifies if the size of each page should be increased to accommodate its content.
+    </description>
+  </configProperty>
+  
+  
   <!-- net.sf.jasperreports.export.flash.element.allow.script.access -->
 
   <configProperty name="net.sf.jasperreports.export.flash.element.allow.script.access">
@@ -5851,6 +5860,58 @@ flag needs to be set in order for the whitelist to apply.
   </configProperty>
 
 
+  <!-- 	net.sf.jasperreports.deserialization.class.filter.enabled -->
+  
+  <configProperty name="net.sf.jasperreports.deserialization.class.filter.enabled">
+    <description>
+Flag to enable filtering of classes that can be used in serialized objects such as compiled report templates or generated reports.
+<br/>
+The list of allowed classes is configured via 
+<a href="#net.sf.jasperreports.deserialization.class.whitelist.{arbitrary_name}">net.sf.jasperreports.deserialization.class.whitelist.{arbitrary_name}</a>
+properties.
+    </description>
+  </configProperty>
+  
+  
+  <!-- 	net.sf.jasperreports.deserialization.class.whitelist.{arbitrary_name} -->
+  
+  <configProperty name="net.sf.jasperreports.deserialization.class.whitelist.{arbitrary_name}">
+    <description>
+Defines a list of classes that are allowed in serialized objects such as compiled report templates or generated reports.
+<br/>
+The property value should be a comma separated list of class names.  Wildcards are supported in class names:
+<ul>
+ <li><code>*</code> stands for any class/package name or part of a class/package name, e.g.
+  <ul>
+   <li><code>net.sf.jasperreports.*</code> means any class in the <code>net.sf.jasperreports</code> package (but not in subpackages)</li>
+   <li><code>net.sf.jasperreports.*Enum</code> means any class in the <code>net.sf.jasperreports</code> package that ends in <code>Enum</code></li>
+  </ul>
+ </li>
+ <li><code>**</code> stands for any fully qualified class name or part of a fully qualified class name, e.g.
+  <ul>
+   <li><code>net.sf.jasperreports.**</code> means any class in the <code>net.sf.jasperreports</code> package or in a subpackage</li>
+   <li><code>net.sf.jasperreports.**Enum</code> means any class that ends in <code>Enum</code> in the <code>net.sf.jasperreports</code> package or in a subpackage</li>
+   <li><code>**</code> means any class (note that for performance reasons instead of whitelisting all classes it's better to unset the <code>net.sf.jasperreports.deserialization.class.filter.enabled</code> flag)</li>
+  </ul>
+ </li>
+</ul>
+<br/>
+The <a href="#net.sf.jasperreports.deserialization.class.filter.enabled">net.sf.jasperreports.deserialization.class.filter.enabled</a>
+flag needs to be set in order for the whitelist to apply.
+    </description>
+  </configProperty>
+  
+  
+  <!-- 	net.sf.jasperreports.deserialization.byte.count.limit -->
+  
+  <configProperty name="net.sf.jasperreports.deserialization.byte.count.limit">
+    <description>
+This property specifies the maximum number of bytes that can be read from a stream when deserializing objects such as compiled report templates or generated reports.
+When not set, there is no limit.
+    </description>
+  </configProperty>
+  
+  
   <!-- 	net.sf.jasperreports.legacy.compiler.source.included.parameters -->
 
   <configProperty name="net.sf.jasperreports.legacy.compiler.source.included.parameters">
@@ -5978,6 +6039,18 @@ The property is only effective when the <code>net.sf.jasperreports.text.save.lin
 The property assumes that the same font is used during report fill and for PDF exporting, therefore using font extensions for texts is recommended.
     </description>
   </configProperty>
+  
+  
+  <!-- net.sf.jasperreports.sorting.use.collator -->
+
+  <configProperty name="net.sf.jasperreports.sorting.use.collator">
+    <description>
+Property that determines whether a <code>java.text.Collator</code> is used to sort <code>java.lang.String</code> values.
+<br/>
+The property is set to <code>true</code> by default.  When set to <code>false</code>, <code>java.lang.String</code> values
+are sorted according to the Unicode lexicographic order.
+    </description>
+  </configProperty>
 
 
   <!-- net.sf.jasperreports.svg.allow.external.resources -->
@@ -6002,6 +6075,28 @@ With this option there are cases in which the temporary files cannot be removed 
 <br/>
 When the property is set to <code>false</code> (which is the default), Java/AWT creates and manages it own
 temporary font files, usually named <code>+~JF*</code>.
+    </description>
+  </configProperty>
+
+
+  <!-- net.sf.jasperreports.frame.overflow.on.stretch -->
+
+  <configProperty name="net.sf.jasperreports.frame.overflow.on.stretch">
+    <description>
+Property that determines whether frame elements will continue on the next page when stretched
+to the bottom of the current page due to stretching of other elements or the container.
+    </description>
+  </configProperty>
+
+
+  <!-- net.sf.jasperreports.text.empty.overflow.on.stretch -->
+
+  <configProperty name="net.sf.jasperreports.text.empty.overflow.on.stretch">
+    <description>
+Property that determines whether text field elements will continue on the next page when stretched
+to the bottom of the current page due to stretching of other elements or the container.
+<br/>
+Text elements will continue on the next page as empty texts, rendering the border and the background.
     </description>
   </configProperty>
 
