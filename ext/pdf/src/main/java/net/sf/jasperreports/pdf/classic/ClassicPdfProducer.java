@@ -32,9 +32,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -93,8 +90,6 @@ import net.sf.jasperreports.renderers.Graphics2DRenderable;
  */
 public class ClassicPdfProducer implements PdfProducer
 {
-	
-	private static final Log log = LogFactory.getLog(ClassicPdfProducer.class);
 	
 	/**
 	 * Flag that determines whether glyph substitution based on Apache FOP is enabled.

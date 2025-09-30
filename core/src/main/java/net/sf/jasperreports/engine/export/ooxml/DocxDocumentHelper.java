@@ -85,37 +85,50 @@ public class DocxDocumentHelper extends BaseHelper
 		int pageWidth = 0;
 		int pageHeight = 0;
 
-		if (isSizePageToContent)
+		if (xCuts.size() == 0)
 		{
+			// empty page
 			leftMargin = pageFormat.getLeftMargin();
 			rightMargin = pageFormat.getRightMargin();
-			pageWidth =
-				Math.max(
-					pageFormat.getPageWidth(), 
-					Math.max(leftMargin, xCuts.getCutOffset(0)) + xCuts.getTotalLength() + rightMargin
-					);
-
 			topMargin = pageFormat.getTopMargin();
 			bottomMargin = pageFormat.getBottomMargin();
-			pageHeight =
-				Math.max(
-					pageFormat.getPageHeight(), 
-					Math.max(topMargin, yCuts.getCutOffset(0)) + yCuts.getTotalLength() + bottomMargin
-					);
+			pageWidth = pageFormat.getPageWidth();
+			pageHeight = pageFormat.getPageHeight();
 		}
 		else
 		{
-			leftMargin = Math.min(xCuts.getCutOffset(0), pageFormat.getLeftMargin());
-			leftMargin = leftMargin < 0 ? 0 : leftMargin;
-			rightMargin = Math.min(pageFormat.getPageWidth() - xCuts.getCutOffset(xCuts.size() - 1), pageFormat.getRightMargin());
-			rightMargin = rightMargin < 0 ? 0 : rightMargin;
-			pageWidth = pageFormat.getPageWidth();
+			if (isSizePageToContent)
+			{
+				leftMargin = pageFormat.getLeftMargin();
+				rightMargin = pageFormat.getRightMargin();
+				pageWidth =
+					Math.max(
+						pageFormat.getPageWidth(), 
+						Math.max(leftMargin, xCuts.getCutOffset(0)) + xCuts.getTotalLength() + rightMargin
+						);
 
-			topMargin = Math.min(yCuts.getCutOffset(0), pageFormat.getTopMargin());
-			topMargin = topMargin < 0 ? 0 : topMargin;
-			bottomMargin = Math.min(pageFormat.getPageHeight() - yCuts.getCutOffset(yCuts.size() - 1), pageFormat.getBottomMargin());
-			bottomMargin = bottomMargin < 0 ? 0 : bottomMargin;
-			pageHeight = pageFormat.getPageHeight();
+				topMargin = pageFormat.getTopMargin();
+				bottomMargin = pageFormat.getBottomMargin();
+				pageHeight =
+					Math.max(
+						pageFormat.getPageHeight(), 
+						Math.max(topMargin, yCuts.getCutOffset(0)) + yCuts.getTotalLength() + bottomMargin
+						);
+			}
+			else
+			{
+				leftMargin = Math.min(xCuts.getCutOffset(0), pageFormat.getLeftMargin());
+				leftMargin = leftMargin < 0 ? 0 : leftMargin;
+				rightMargin = Math.min(pageFormat.getPageWidth() - xCuts.getCutOffset(xCuts.size() - 1), pageFormat.getRightMargin());
+				rightMargin = rightMargin < 0 ? 0 : rightMargin;
+				pageWidth = pageFormat.getPageWidth();
+
+				topMargin = Math.min(yCuts.getCutOffset(0), pageFormat.getTopMargin());
+				topMargin = topMargin < 0 ? 0 : topMargin;
+				bottomMargin = Math.min(pageFormat.getPageHeight() - yCuts.getCutOffset(yCuts.size() - 1), pageFormat.getBottomMargin());
+				bottomMargin = bottomMargin < 0 ? 0 : bottomMargin;
+				pageHeight = pageFormat.getPageHeight();
+			}
 		}
 		
 		if (!lastPage)
