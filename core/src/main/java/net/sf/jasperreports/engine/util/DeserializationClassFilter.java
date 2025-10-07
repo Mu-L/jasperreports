@@ -21,41 +21,39 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.compilers;
+package net.sf.jasperreports.engine.util;
 
 import net.sf.jasperreports.annotations.properties.Property;
 import net.sf.jasperreports.annotations.properties.PropertyScope;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.util.AbstractClassFilter;
-import net.sf.jasperreports.engine.util.StandardClassWhitelist;
 import net.sf.jasperreports.properties.PropertyConstants;
 
 /**
- * @author Lucian Chirita (lucianc@users.sourceforge.net)
+ * @author Teodor Danciu (teodord@users.sourceforge.net)
  */
-public class ReportClassFilter extends AbstractClassFilter
+public class DeserializationClassFilter extends AbstractClassFilter
 {
 	@Property(
-			category = PropertyConstants.CATEGORY_FILL,
-			defaultValue = "false",
+			category = PropertyConstants.CATEGORY_OTHER,
+			defaultValue = "true",
 			scopes = {PropertyScope.CONTEXT},
-			sinceVersion = PropertyConstants.VERSION_6_13_0,
+			sinceVersion = PropertyConstants.VERSION_7_0_4,
 			valueType = Boolean.class
 			)
 	public static final String PROPERTY_CLASS_FILTER_ENABLED = 
-			JRPropertiesUtil.PROPERTY_PREFIX + "report.class.filter.enabled";
+			JRPropertiesUtil.PROPERTY_PREFIX + "deserialization.class.filter.enabled";
 	
 	@Property(
-			category = PropertyConstants.CATEGORY_FILL,
+			category = PropertyConstants.CATEGORY_OTHER,
 			scopes = {PropertyScope.CONTEXT},
-			sinceVersion = PropertyConstants.VERSION_6_13_0,
-			name = "net.sf.jasperreports.report.class.whitelist.{arbitrary_name}"
+			sinceVersion = PropertyConstants.VERSION_7_0_4,
+			name = "net.sf.jasperreports.deserialization.class.whitelist.{arbitrary_name}"
 			)
 	public static final String PROPERTY_PREFIX_CLASS_WHITELIST = 
-			JRPropertiesUtil.PROPERTY_PREFIX + "report.class.whitelist.";
+			JRPropertiesUtil.PROPERTY_PREFIX + "deserialization.class.whitelist.";
 	
-	public static final String EXCEPTION_MESSAGE_KEY_CLASS_NOT_VISIBLE = "compilers.class.not.visible";
+	public static final String EXCEPTION_MESSAGE_KEY_CLASS_NOT_VISIBLE = "deserialization.class.not.visible";
 	
 	@Override
 	protected String getClassFilterEnabledPropertyName()
@@ -78,23 +76,30 @@ public class ReportClassFilter extends AbstractClassFilter
 	@Override
 	protected void addHardcodedWhitelist(StandardClassWhitelist whitelist)
 	{
+		whitelist.addClass("B");
+		//whitelist.addClass("C");
+		whitelist.addClass("D");
+		whitelist.addClass("F");
+		whitelist.addClass("I");
+		whitelist.addClass("J");
+		whitelist.addClass("S");
+		whitelist.addClass("Z");
 		whitelist.addClass("java.lang.Boolean");
-		whitelist.addClass("java.lang.String");
-		whitelist.addClass("java.lang.StringBuffer");
-		whitelist.addClass("java.lang.StringBuilder");
-		whitelist.addClass("java.lang.Character");
 		whitelist.addClass("java.lang.Byte");
-		whitelist.addClass("java.lang.Short");
+		whitelist.addClass("java.lang.Character");
+		whitelist.addClass("java.lang.Double");
+		whitelist.addClass("java.lang.Enum");
+		whitelist.addClass("java.lang.Float");
 		whitelist.addClass("java.lang.Integer");
 		whitelist.addClass("java.lang.Long");
-		whitelist.addClass("java.lang.Float");
-		whitelist.addClass("java.lang.Double");
-		whitelist.addClass("java.lang.Math");
+		whitelist.addClass("java.lang.Number");
+		whitelist.addClass("java.lang.Object");
+		whitelist.addClass("java.lang.Short");
+		whitelist.addClass("java.lang.String");
 	}
 	
-	public ReportClassFilter(JasperReportsContext jasperReportsContext)
+	public DeserializationClassFilter(JasperReportsContext jasperReportsContext)
 	{
 		super(jasperReportsContext);
 	}
-	
 }

@@ -675,27 +675,31 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 		}
 		
 		// an empty page is encountered; 
-		// if it's the first one in a series of consecutive empty pages, emptyPageState == false, otherwise emptyPageState == true
-		if (rowCount == 0 && (pageIndex < endPageIndex || !emptyPageState))
+		if (rowCount == 0)
 		{
-			tableHelper = 
-					new DocxTableHelper(
-						jasperReportsContext,
-						crtDocWriter, 
-						xCuts,
-						false,
-						pageFormat,
-						frameIndex
-						);
-			int maxReportIndex = exporterInput.getItems().size() - 1;
-			
-			// while the first and last page in the JasperPrint list need single breaks, all the others require double-breaking 
-			boolean twice = 
-					(pageIndex > startPageIndex && pageIndex < endPageIndex && !emptyPageState)
-					||(reportIndex < maxReportIndex && pageIndex == endPageIndex);
-			tableHelper.getParagraphHelper().exportEmptyPage(pageAnchor, bookmarkIndex, twice);
-			bookmarkIndex++;
-			emptyPageState = true;
+			// if it's the first one in a series of consecutive empty pages, emptyPageState == false, otherwise emptyPageState == true
+			if (pageIndex < endPageIndex || !emptyPageState)
+			{
+				tableHelper = 
+						new DocxTableHelper(
+							jasperReportsContext,
+							crtDocWriter, 
+							xCuts,
+							false,
+							pageFormat,
+							frameIndex
+							);
+				int maxReportIndex = exporterInput.getItems().size() - 1;
+				
+				// while the first and last page in the JasperPrint list need single breaks, all the others require double-breaking 
+				boolean twice = 
+						(pageIndex > startPageIndex && pageIndex < endPageIndex && !emptyPageState)
+						||(reportIndex < maxReportIndex && pageIndex == endPageIndex);
+				tableHelper.getParagraphHelper().exportEmptyPage(pageAnchor, bookmarkIndex, twice);
+				bookmarkIndex++;
+				emptyPageState = true;
+			}
+
 			return;
 		}
 		

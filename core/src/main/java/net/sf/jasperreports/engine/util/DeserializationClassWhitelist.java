@@ -21,13 +21,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.compilers;
-
-import net.sf.jasperreports.engine.util.StandardClassWhitelist;
+package net.sf.jasperreports.engine.util;
 
 /**
- * @author Lucian Chirita (lucianc@users.sourceforge.net)
+ * @author Teodor Danciu (teodord@users.sourceforge.net)
  */
-public class StandardReportClassWhitelist extends StandardClassWhitelist implements ReportClassWhitelist
+public interface DeserializationClassWhitelist extends ClassWhitelist
 {
 }
