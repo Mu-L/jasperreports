@@ -40,8 +40,6 @@ import net.sf.jasperreports.engine.JRPropertyExpression;
 import net.sf.jasperreports.engine.xml.JRXmlConstants;
 
 /**
- * 
- * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  */
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "kind")
@@ -77,6 +75,15 @@ public interface BaseColumn extends JRCloneable, JRPropertiesHolder, JRIdentifia
 	@JacksonXmlProperty(isAttribute = true)
 	Integer getWidth();
 	
+	/**
+	 * Specifies the weight of the column when table columns are to be resized to occupy the entire width of the table component.
+	 * A weight based system is used to resize columns, with columns having bigger weight taking more of the extra space available.
+	 * Negative values represent multipliers of column width.
+	 * For example, weight value -1 means the weight of column will be equals to its width value, while weight -2 means
+	 * the column weight will be twice the value of the column width.
+	 * A typical case would be to have weight -1 for all columns, meaning they will all grow proportionally to their initial width.
+	 * Another typical case is to have weight 1 for all columns, meaning they will all grow with an equal amount, regardless of their initial width.
+	 */
 	@JacksonXmlProperty(isAttribute = true)
 	Integer getWeight();
 
