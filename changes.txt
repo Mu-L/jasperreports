@@ -2,6 +2,29 @@
 JasperReports Library Change Log
 =============================================
 
+JasperReports 7.0.5 (2025-1x-xx)
+---------------------------------------------
+
+- minor bug fixes and improvements;
+
+
+
+
+
+JasperReports 7.0.4 (2025-10-09)
+---------------------------------------------
+
+- add deserialization class filter to fix the CVE-2025-10492 security vulnerability;
+
+- new net.sf.jasperreports.export.docx.size.page.to.content export configuration property 
+added to support variable DOCX page size;
+
+- minor bug fixes and improvements;
+
+
+
+
+
 JasperReports 7.0.3 (2025-05-02)
 ---------------------------------------------
 
