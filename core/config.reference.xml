@@ -2359,7 +2359,12 @@ Property that provides the default value for the shrinkWidth setting of the tabl
 
   <configProperty name="net.sf.jasperreports.components.table.column.weight">
     <description>
-Property that provides the default value for the weight of a table component column.
+Property that provides the default value for the weight of a table component column. 
+Integer values are expected, with negative values representing multipliers of column width.
+For example, weight value -1 means the weight of column will be equals to its width value, while weight -2 means
+the column weight will be twice the value of the column width.
+A typical case would be to have weight -1 for all columns, meaning they will all grow proportionally to their initial width.
+Another typical case is to have weight 1 for all columns, meaning they will all grow with an equal amount, regardless of their initial width.
     </description>
   </configProperty>
 
