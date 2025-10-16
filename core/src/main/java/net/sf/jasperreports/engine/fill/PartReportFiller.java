@@ -773,4 +773,21 @@ public class PartReportFiller extends BaseReportFiller
 		}
 	}
 
+	public JRVirtualizationContext getPartVirtualizationContext(JasperReport jasperReport, 
+			Map<String, Object> parameterValues)
+	{
+		if (partQueue.useMainVirtualizationContext())
+		{
+			// the parent is a part filler, using the master virtualization context
+			//FIXMEBOOK JRVirtualPrintPage.PROPERTY_VIRTUAL_PAGE_ELEMENT_SIZE at part level is not used
+			return fillContext.getVirtualizationContext();
+		}
+
+		// creating a child virtualization context
+		JRVirtualizationContext virtualizationContext = new JRVirtualizationContext(
+				fillContext.getVirtualizationContext());
+		virtualizationContext.setVirtualPageSize(jasperReport, parameterValues);
+		return virtualizationContext;
+	}
+	
 }

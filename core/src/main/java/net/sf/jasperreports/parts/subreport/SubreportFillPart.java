@@ -63,6 +63,7 @@ import net.sf.jasperreports.engine.fill.JRFillSubreport;
 import net.sf.jasperreports.engine.fill.JRFillVariable;
 import net.sf.jasperreports.engine.fill.JRHorizontalFiller;
 import net.sf.jasperreports.engine.fill.JRVerticalFiller;
+import net.sf.jasperreports.engine.fill.JRVirtualizationContext;
 import net.sf.jasperreports.engine.fill.JasperReportSource;
 import net.sf.jasperreports.engine.fill.PartPropertiesDetector;
 import net.sf.jasperreports.engine.fill.PartReportFiller;
@@ -338,6 +339,13 @@ public class SubreportFillPart extends BasePartFillComponent
 		}
 
 		@Override
+		public JRVirtualizationContext getChildVirtualizationContext(JasperReport jasperReport,
+				Map<String, Object> parameterValues)
+		{
+			return fillContext.getFiller().getPartVirtualizationContext(jasperReport, parameterValues);
+		}
+		
+		@Override
 		public boolean isSplitTypePreventInhibited(boolean isTopLevelCall)
 		{
 			return true;
@@ -458,6 +466,13 @@ public class SubreportFillPart extends BasePartFillComponent
 		public boolean isParentPagination()
 		{
 			return false;
+		}
+		
+		@Override
+		public JRVirtualizationContext getChildVirtualizationContext(JasperReport jasperReport,
+				Map<String, Object> parameterValues)
+		{
+			return fillContext.getFiller().getPartVirtualizationContext(jasperReport, parameterValues);
 		}
 	}
 

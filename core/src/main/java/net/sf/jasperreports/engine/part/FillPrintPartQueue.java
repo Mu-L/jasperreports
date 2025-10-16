@@ -127,4 +127,9 @@ public class FillPrintPartQueue implements FillPartQueue
 		//NOOP
 	}
 	
+	@Override
+	public boolean useMainVirtualizationContext()
+	{
+		return true;
+	}
 }

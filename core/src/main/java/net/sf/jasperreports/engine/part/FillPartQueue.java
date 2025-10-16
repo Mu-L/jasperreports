@@ -50,4 +50,6 @@ public interface FillPartQueue
 
 	void cancelParts();
 
+	boolean useMainVirtualizationContext();
+
 }
