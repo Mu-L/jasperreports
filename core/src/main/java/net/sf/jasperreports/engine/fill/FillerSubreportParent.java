@@ -125,7 +125,7 @@ public class FillerSubreportParent implements BandReportFillerParent
 		
 		// setting per subreport page size
 		virtualizationContext.setVirtualPageSize(jasperReport, parameterValues);
-		return null;
+		return virtualizationContext;
 	}
 	
 	@Override
