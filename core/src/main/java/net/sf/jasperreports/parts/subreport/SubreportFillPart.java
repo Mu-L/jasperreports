@@ -63,10 +63,12 @@ import net.sf.jasperreports.engine.fill.JRFillSubreport;
 import net.sf.jasperreports.engine.fill.JRFillVariable;
 import net.sf.jasperreports.engine.fill.JRHorizontalFiller;
 import net.sf.jasperreports.engine.fill.JRVerticalFiller;
+import net.sf.jasperreports.engine.fill.JRVirtualizationContext;
 import net.sf.jasperreports.engine.fill.JasperReportSource;
 import net.sf.jasperreports.engine.fill.PartPropertiesDetector;
 import net.sf.jasperreports.engine.fill.PartReportFiller;
 import net.sf.jasperreports.engine.part.BasePartFillComponent;
+import net.sf.jasperreports.engine.part.EvaluatedPart;
 import net.sf.jasperreports.engine.part.FillingPrintPart;
 import net.sf.jasperreports.engine.part.PartPrintOutput;
 import net.sf.jasperreports.engine.type.PrintOrderEnum;
@@ -99,16 +101,6 @@ public class SubreportFillPart extends BasePartFillComponent
 	private SubreportPartComponent subreportPart;
 	private JRFillExpressionEvaluator expressionEvaluator;
 	private FillReturnValues returnValues;
-	private FillReturnValues.SourceContext returnValuesSource;
-
-	private Object reportSource;
-	private JasperReportSource jasperReportSource;
-	private Map<String, Object> parameterValues;
-	
-	private FillDatasetPosition datasetPosition;
-	private boolean cacheIncluded;
-	
-	private volatile BaseReportFiller subreportFiller;
 	
 	public SubreportFillPart(SubreportPartComponent subreportPart, JRFillObjectFactory factory)
 	{
@@ -116,61 +108,53 @@ public class SubreportFillPart extends BasePartFillComponent
 		this.expressionEvaluator = factory.getExpressionEvaluator();
 		
 		this.returnValues = new FillReturnValues(subreportPart.getReturnValues(), factory, factory.getReportFiller());
-		this.returnValuesSource = new AbstractVariableReturnValueSourceContext() 
-		{
-			@Override
-			public Object getValue(CommonReturnValue returnValue) {
-				return subreportFiller.getVariableValue(((VariableReturnValue)returnValue).getFromVariable());
-			}
-			
-			@Override
-			public JRFillVariable getToVariable(String name) {
-				return fillContext.getFiller().getVariable(name);
-			}
-			
-			@Override
-			public JRVariable getFromVariable(String name) {
-				return subreportFiller.getVariable(name);
-			}
-		};
 	}
 
 	@Override
-	public void evaluate(byte evaluation) throws JRException
+	public Object evaluate(byte evaluation) throws JRException
 	{
-		jasperReportSource = evaluateReportSource(evaluation);
+		EvaluatedSubreportPart evaluatedSubreport = new EvaluatedSubreportPart();
+		
+		JasperReportSource jasperReportSource = evaluateReportSource(evaluation);
+		evaluatedSubreport.setJasperReportSource(jasperReportSource);
 		
 		JRFillDataset parentDataset = expressionEvaluator.getFillDataset();
-		datasetPosition = new FillDatasetPosition(parentDataset.getFillPosition());
+		FillDatasetPosition datasetPosition = new FillDatasetPosition(parentDataset.getFillPosition());
 		datasetPosition.addAttribute("subreportPartUUID", fillContext.getPart().getUUID());
 		parentDataset.setCacheRecordIndex(datasetPosition, evaluation);
+		evaluatedSubreport.setDatasetPosition(datasetPosition);
 		
 		String cacheIncludedProp = JRPropertiesUtil.getOwnProperty(fillContext.getPart(), DataCacheHandler.PROPERTY_INCLUDED); 
-		cacheIncluded = JRPropertiesUtil.asBoolean(cacheIncludedProp, true);// default to true
+		boolean cacheIncluded = JRPropertiesUtil.asBoolean(cacheIncludedProp, true);// default to true
 		//FIXMEBOOK do not evaluate REPORT_DATA_SOURCE
+		evaluatedSubreport.setCacheIncluded(cacheIncluded);
 		
-		JasperReport jasperReport = getReport();
-		parameterValues = JRFillSubreport.getParameterValues(fillContext.getFiller(), expressionEvaluator, 
+		JasperReport jasperReport = getReport(evaluatedSubreport);
+		Map<String, Object> parameterValues = JRFillSubreport.getParameterValues(fillContext.getFiller(), expressionEvaluator, 
 				subreportPart.getParametersMapExpression(), subreportPart.getParameters(), 
 				evaluation, false, 
 				jasperReport.getResourceBundle() != null, jasperReport.getFormatFactoryClass() != null);
+		evaluatedSubreport.setParameterValues(parameterValues);
 		
-		setBookmarksParameter();
+		setBookmarksParameter(evaluatedSubreport);
+		
+		return evaluatedSubreport;
 	}
 
 	private JasperReportSource evaluateReportSource(byte evaluation) throws JRException
 	{
-		reportSource = fillContext.evaluate(subreportPart.getExpression(), evaluation);
+		Object reportSource = fillContext.evaluate(subreportPart.getExpression(), evaluation);
 		return JRFillSubreport.getReportSource(reportSource, subreportPart.getUsingCache(), 
 				fillContext.getFiller());
 	}
 	
-	private JasperReport getReport()
+	private static JasperReport getReport(EvaluatedSubreportPart evaluatedSubreport)
 	{
+		JasperReportSource jasperReportSource = evaluatedSubreport.getJasperReportSource();
 		return jasperReportSource == null ? null : jasperReportSource.getReport();
 	}
 
-	private void setBookmarksParameter()
+	private void setBookmarksParameter(EvaluatedSubreportPart evaluatedSubreport)
 	{
 		JRPart part = fillContext.getPart();
 		String bookmarksParameter = part.hasProperties() ? part.getPropertiesMap().getProperty(PROPERTY_BOOKMARKS_DATA_SOURCE_PARAMETER) : null;
@@ -184,40 +168,46 @@ public class SubreportFillPart extends BasePartFillComponent
 			// if the bookmarks data source is created as main data source for the part report,
 			// automatically exclude it from data snapshots as jive actions might result in different bookmarks.
 			// if the data source is not the main report data source people will have to manually inhibit data caching.
-			cacheIncluded = false;
+			evaluatedSubreport.setCacheIncluded(false);
 		}
 		
 		BookmarkHelper bookmarks = fillContext.getFiller().getFirstBookmarkHelper();
 		BookmarksFlatDataSource bookmarksDataSource = new BookmarksFlatDataSource(bookmarks);
-		parameterValues.put(bookmarksParameter, bookmarksDataSource);
+		evaluatedSubreport.setParameterValue(bookmarksParameter, bookmarksDataSource);
 	}
 
 	@Override
-	public void fill(PartPrintOutput output) throws JRException
+	public void fill(EvaluatedPart evaluatedPart, PartPrintOutput output) throws JRException
 	{
-		subreportFiller = createSubreportFiller(output);
+		EvaluatedSubreportPart evaluatedSubreport = (EvaluatedSubreportPart) evaluatedPart.getEvaluatedComponent();
+		BaseReportFiller subreportFiller = createSubreportFiller(evaluatedPart, evaluatedSubreport, output);
+		
+		ReturnValueSourceContext returnValuesSource = new ReturnValueSourceContext(subreportFiller);
 		returnValues.checkReturnValues(returnValuesSource);
 		
 		JRFillDataset subreportDataset = subreportFiller.getMainDataset();
-		subreportDataset.setFillPosition(datasetPosition);
-		subreportDataset.setCacheSkipped(!cacheIncluded);
+		subreportDataset.setFillPosition(evaluatedSubreport.getDatasetPosition());
+		subreportDataset.setCacheSkipped(!evaluatedSubreport.isCacheIncluded());
 		
-		subreportFiller.fill(parameterValues);
+		subreportFiller.fill(evaluatedSubreport.getParameterValues());
 		returnValues.copyValues(returnValuesSource);
 	}
 	
-	protected BaseReportFiller createSubreportFiller(final PartPrintOutput output) throws JRException
+	protected BaseReportFiller createSubreportFiller(final EvaluatedPart evaluatedPart, 
+			final EvaluatedSubreportPart evaluatedSubreport,
+			final PartPrintOutput output) throws JRException
 	{
-		SectionTypeEnum sectionType = SectionTypeEnum.getValueOrDefault(getReport().getSectionType());
+		JasperReport report = getReport(evaluatedSubreport);
+		SectionTypeEnum sectionType = SectionTypeEnum.getValueOrDefault(report.getSectionType());
 		
 		BaseReportFiller filler;
 		switch (sectionType)
 		{
 		case BAND:
-			filler = createBandSubfiller(output);
+			filler = createBandSubfiller(evaluatedPart, evaluatedSubreport, output);
 			break;
 		case PART:
-			filler = createPartSubfiller(output);
+			filler = createPartSubfiller(evaluatedSubreport, output);
 			break;
 		default:
 			throw 
@@ -229,11 +219,14 @@ public class SubreportFillPart extends BasePartFillComponent
 		return filler;
 	}
 
-	protected JRBaseFiller createBandSubfiller(final PartPrintOutput output) throws JRException
+	protected JRBaseFiller createBandSubfiller(final EvaluatedPart evaluatedPart, 
+			final EvaluatedSubreportPart evaluatedSubreport, 
+			final PartPrintOutput output) throws JRException
 	{
-		BandReportFillerParent bandParent = new PartBandParent(output);
+		BandReportFillerParent bandParent = new PartBandParent(evaluatedPart, evaluatedSubreport, output);
 		JRBaseFiller bandFiller;
-		JasperReport jasperReport = getReport();
+		JasperReport jasperReport = getReport(evaluatedSubreport);
+		JasperReportSource jasperReportSource = evaluatedSubreport.getJasperReportSource();
 		PrintOrderEnum printOrder = PrintOrderEnum.getValueOrDefault(jasperReport.getPrintOrder()); 
 		switch (printOrder)
 		{
@@ -268,36 +261,32 @@ public class SubreportFillPart extends BasePartFillComponent
 		return bandFiller;
 	}
 
-	protected BaseReportFiller createPartSubfiller(PartPrintOutput output) throws JRException
+	protected BaseReportFiller createPartSubfiller(EvaluatedSubreportPart evaluatedSubreport, PartPrintOutput output) throws JRException
 	{
 		PartParent partParent = new PartParent(output);
+		JasperReportSource jasperReportSource = evaluatedSubreport.getJasperReportSource();
 		PartReportFiller partFiller = new PartReportFiller(getJasperReportsContext(), jasperReportSource, partParent);
 		return partFiller;
 	}
 	
-	protected String getPartName()
-	{
-		return fillContext.getFillPart().getPartName();
-	}
-	
-	protected JRPropertiesHolder getPrintPartProperties()
-	{
-		return fillContext.getFillPart().getPrintPartProperties();
-	}
-	
 	protected class PartBandParent implements BandReportFillerParent
 	{
+		private final EvaluatedPart evaluatedPart;
+		private final EvaluatedSubreportPart evaluatedSubreport;
 		private final PartPrintOutput output;
 
-		protected PartBandParent(PartPrintOutput output)
+		protected PartBandParent(EvaluatedPart evaluatedPart, EvaluatedSubreportPart evaluatedSubreport, 
+				PartPrintOutput output)
 		{
+			this.evaluatedPart = evaluatedPart;
+			this.evaluatedSubreport = evaluatedSubreport;
 			this.output = output;
 		}
 
 		@Override
 		public String getReportName()
 		{
-			return getReport().getName();
+			return getReport(evaluatedSubreport).getName();
 		}
 
 		@Override
@@ -350,6 +339,13 @@ public class SubreportFillPart extends BasePartFillComponent
 		}
 
 		@Override
+		public JRVirtualizationContext getChildVirtualizationContext(JasperReport jasperReport,
+				Map<String, Object> parameterValues)
+		{
+			return fillContext.getFiller().getPartVirtualizationContext(jasperReport, parameterValues);
+		}
+		
+		@Override
 		public boolean isSplitTypePreventInhibited(boolean isTopLevelCall)
 		{
 			return true;
@@ -362,7 +358,7 @@ public class SubreportFillPart extends BasePartFillComponent
 			if (pageAdded.getPageIndex() == 0)
 			{
 				//first page, adding the part info
-				partCreator.accept(getPartName(), getPrintPartProperties());
+				partCreator.accept(evaluatedPart.getPartName(), evaluatedPart.getPrintPartProperties());
 			}
 			
 			if (fillContext.getFiller().getFillContext().toDetectParts())
@@ -401,6 +397,7 @@ public class SubreportFillPart extends BasePartFillComponent
 		@Override
 		public String getReportLocation()
 		{
+			JasperReportSource jasperReportSource = evaluatedSubreport.getJasperReportSource();
 			return jasperReportSource == null ? null : jasperReportSource.getReportLocation();
 		}
 
@@ -470,6 +467,37 @@ public class SubreportFillPart extends BasePartFillComponent
 		{
 			return false;
 		}
+		
+		@Override
+		public JRVirtualizationContext getChildVirtualizationContext(JasperReport jasperReport,
+				Map<String, Object> parameterValues)
+		{
+			return fillContext.getFiller().getPartVirtualizationContext(jasperReport, parameterValues);
+		}
 	}
 
+	protected class ReturnValueSourceContext extends AbstractVariableReturnValueSourceContext
+	{
+		private final  BaseReportFiller subreportFiller;
+
+		public ReturnValueSourceContext(BaseReportFiller subreportFiller)
+		{
+			this.subreportFiller = subreportFiller;
+		}
+		
+		@Override
+		public Object getValue(CommonReturnValue returnValue) {
+			return subreportFiller.getVariableValue(((VariableReturnValue)returnValue).getFromVariable());
+		}
+		
+		@Override
+		public JRFillVariable getToVariable(String name) {
+			return fillContext.getFiller().getVariable(name);
+		}
+		
+		@Override
+		public JRVariable getFromVariable(String name) {
+			return subreportFiller.getVariable(name);
+		}
+	}
 }

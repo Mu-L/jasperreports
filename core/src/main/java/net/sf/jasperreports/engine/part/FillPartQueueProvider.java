@@ -21,32 +21,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.part;
 
-import java.util.Map;
+import java.util.Optional;
 
-import net.sf.jasperreports.engine.JRPrintElement;
-import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.JasperReport;
-
+import net.sf.jasperreports.engine.fill.PartReportFiller;
 
 /**
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  */
-public interface FillerParent
+public interface FillPartQueueProvider
 {
 
-	BaseReportFiller getFiller();
+	Optional<FillPartQueue> createPartQueue(PartReportFiller filler, PartPrintOutput printOutput);
 	
-	JRPropertiesHolder getParentProperties();
-	
-	boolean isParentPagination();
-	
-	DatasetExpressionEvaluator getCachedEvaluator();
-
-	void updateBookmark(JRPrintElement element);
-
-	JRVirtualizationContext getChildVirtualizationContext(JasperReport jasperReport, 
-			Map<String, Object> parameterValues);
-
 }

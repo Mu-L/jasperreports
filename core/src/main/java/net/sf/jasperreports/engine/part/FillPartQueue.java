@@ -21,32 +21,35 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.part;
 
-import java.util.Map;
+import java.util.function.Supplier;
 
-import net.sf.jasperreports.engine.JRPrintElement;
-import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.JasperReport;
-
+import net.sf.jasperreports.engine.JRException;
 
 /**
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  */
-public interface FillerParent
+public interface FillPartQueue
 {
 
-	BaseReportFiller getFiller();
-	
-	JRPropertiesHolder getParentProperties();
-	
-	boolean isParentPagination();
-	
-	DatasetExpressionEvaluator getCachedEvaluator();
+	FillPrintPart head();
 
-	void updateBookmark(JRPrintElement element);
+	void beforeEvaluate(FillPart part) throws JRException;
+	
+	void fillPart(FillPart fillPart, EvaluatedPart evaluatedPart, Supplier<PartPrintOutput> localOutputSupplier) throws JRException;
 
-	JRVirtualizationContext getChildVirtualizationContext(JasperReport jasperReport, 
-			Map<String, Object> parameterValues);
+	DelayedPrintPart appendDelayed(FillPart fillPart);
+
+	void fillDelayed(DelayedPrintPart part, EvaluatedPart evaluatedPart, Supplier<PartPrintOutput> localOutputSupplier) throws JRException;
+	
+	void finishParts() throws JRException;
+
+	void dispose();
+
+	void cancelParts();
+
+	boolean useMainVirtualizationContext();
 
 }

@@ -21,32 +21,58 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.part;
 
-import java.util.Map;
-
-import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.JasperReport;
-
 
 /**
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  */
-public interface FillerParent
+public class EvaluatedPart
 {
-
-	BaseReportFiller getFiller();
 	
-	JRPropertiesHolder getParentProperties();
+	public static final EvaluatedPart NO_PRINT = new EvaluatedPart(false, null, null, null);
 	
-	boolean isParentPagination();
+	private final boolean toPrint;
+	private final String partName;
+	private final JRPropertiesHolder printPartProperties;
+	private final Object evaluatedComponent;
 	
-	DatasetExpressionEvaluator getCachedEvaluator();
+	public EvaluatedPart(String partName, JRPropertiesHolder printPartProperties,
+			Object evaluatedComponent)
+	{
+		this(true, partName, printPartProperties, evaluatedComponent);
+	}
+	
+	protected EvaluatedPart(boolean toPrint, 
+			String partName, JRPropertiesHolder printPartProperties,
+			Object evaluatedComponent)
+	{
+		this.toPrint = toPrint;
+		this.partName = partName;
+		this.printPartProperties = printPartProperties;
+		this.evaluatedComponent = evaluatedComponent;
+	}
 
-	void updateBookmark(JRPrintElement element);
+	public boolean isToPrint()
+	{
+		return toPrint;
+	}
 
-	JRVirtualizationContext getChildVirtualizationContext(JasperReport jasperReport, 
-			Map<String, Object> parameterValues);
+	public String getPartName()
+	{
+		return partName;
+	}
+	
+	public JRPropertiesHolder getPrintPartProperties()
+	{
+		return printPartProperties;
+	}
 
+	public Object getEvaluatedComponent()
+	{
+		return evaluatedComponent;
+	}
+	
 }

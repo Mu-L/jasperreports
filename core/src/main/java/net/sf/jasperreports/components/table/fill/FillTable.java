@@ -177,13 +177,8 @@ public class FillTable extends SubreportFillComponent
 	protected void setTableInstanceCounter()
 	{
 		JRFillContext fillerContext = fillContext.getFiller().getFillContext();
-		AtomicInteger counter = (AtomicInteger) fillerContext.getFillCache(FILL_CACHE_KEY_TABLE_INSTANCE_COUNTER);
-		if (counter == null)
-		{
-			// we just need a mutable integer, there's no actual concurrency here
-			counter = new AtomicInteger();
-			fillerContext.setFillCache(FILL_CACHE_KEY_TABLE_INSTANCE_COUNTER, counter);
-		}
+		AtomicInteger counter = fillerContext.getFillCache(FILL_CACHE_KEY_TABLE_INSTANCE_COUNTER,
+				AtomicInteger::new);
 		
 		int instanceIndex = counter.getAndIncrement();
 		if (log.isDebugEnabled())

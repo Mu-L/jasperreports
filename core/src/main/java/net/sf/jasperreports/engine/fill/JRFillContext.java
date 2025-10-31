@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,7 +78,7 @@ public class JRFillContext
 	
 	private static final JRSingletonCache<MarkupProcessorFactory> markupProcessorFactoryCache = 
 			new JRSingletonCache<>(MarkupProcessorFactory.class);
-	private final Map<String,MarkupProcessor> markupProcessors = new HashMap<>();
+	private final Map<String, MarkupProcessorFactory> markupProcessorFactories = new HashMap<>();
 
 	private final BaseReportFiller masterFiller;
 	
@@ -87,8 +88,8 @@ public class JRFillContext
 	private Map<Object,ReportTemplateSource> loadedTemplates;
 	private DeduplicableRegistry deduplicableRegistry;
 	private boolean usingVirtualizer;
-	private JRPrintPage printPage;
-	private JRQueryExecuter queryExecuter;
+	private JRPrintPage printPage;//FIXME used?
+	private Map<JRQueryExecuter, Boolean> queryExecuters;
 	
 	private JasperReportsContext jasperReportsContext;
 	private JRStyledTextUtil styledTextUtil;
@@ -131,6 +132,8 @@ public class JRFillContext
 		deduplicableRegistry = new DeduplicableRegistry();
 		
 		FontUtil.getInstance(jasperReportsContext).resetThreadMissingFontsCache();
+		
+		this.queryExecuters = new HashMap<>();
 	}
 
 	public BaseReportFiller getMasterFiller()
@@ -166,7 +169,7 @@ public class JRFillContext
 	 * @see #getLoadedRenderer(Object)
 	 * @see #registerLoadedRenderer(Object, Renderable)
 	 */
-	public boolean hasLoadedRenderer(Object source)
+	public synchronized boolean hasLoadedRenderer(Object source)
 	{
 		return loadedImageRenderers.containsKey(source); 
 	}
@@ -179,7 +182,7 @@ public class JRFillContext
 	 * @return the cached image renderer
 	 * @see #registerLoadedRenderer(Object, Renderable)
 	 */
-	public Renderable getLoadedRenderer(Object source)
+	public synchronized Renderable getLoadedRenderer(Object source)
 	{
 		return loadedImageRenderers.get(source); 
 	}
@@ -194,13 +197,20 @@ public class JRFillContext
 	 * @param renderer the loaded image renderer
 	 * @see #getLoadedRenderer(Object)
 	 */
-	public void registerLoadedRenderer(Object source, Renderable renderer)
+	public synchronized Renderable registerLoadedRenderer(Object source, Renderable renderer)
 	{
+		Renderable existingRenderer = loadedImageRenderers.get(source);
+		if (existingRenderer != null)
+		{
+			return existingRenderer;
+		}
+		
 		loadedImageRenderers.put(source, renderer);
 		if (usingVirtualizer)
 		{
 			virtualizationContext.cacheRenderer(renderer);
 		}
+		return renderer;
 	}
 
 	
@@ -221,7 +231,7 @@ public class JRFillContext
 	 * @see #getLoadedSubreport(Object)
 	 * @see #registerLoadedSubreport(Object, JasperReportSource)
 	 */
-	public boolean hasLoadedSubreport(Object source)
+	public synchronized boolean hasLoadedSubreport(Object source)
 	{
 		return loadedSubreports.containsKey(source); 
 	}
@@ -234,7 +244,7 @@ public class JRFillContext
 	 * @return the cached subreport
 	 * @see #registerLoadedSubreport(Object, JasperReportSource)
 	 */
-	public JasperReportSource getLoadedSubreport(Object source)
+	public synchronized JasperReportSource getLoadedSubreport(Object source)
 	{
 		return loadedSubreports.get(source); 
 	}
@@ -249,9 +259,16 @@ public class JRFillContext
 	 * @param subreport the loaded subreport
 	 * @see #getLoadedSubreport(Object)
 	 */
-	public void registerLoadedSubreport(Object source, JasperReportSource subreport)
+	public synchronized JasperReportSource registerLoadedSubreport(Object source, JasperReportSource subreport)
 	{
+		JasperReportSource existingSubreport = loadedSubreports.get(source);
+		if (existingSubreport != null)
+		{
+			return existingSubreport;
+		}
+		
 		loadedSubreports.put(source, subreport);
+		return subreport;
 	}
 
 	
@@ -330,7 +347,7 @@ public class JRFillContext
 	 */
 	public synchronized void setRunningQueryExecuter(JRQueryExecuter queryExecuter)
 	{
-		this.queryExecuter = queryExecuter;
+		this.queryExecuters.put(queryExecuter, null);
 	}
 	
 	
@@ -338,11 +355,12 @@ public class JRFillContext
 	 * Clears the running query executer.
 	 * <p>
 	 * This method is called after the query has ended.
+	 * @param queryExecuter the query executer
 	 *
 	 */
-	public synchronized void clearRunningQueryExecuter()
+	public synchronized void clearRunningQueryExecuter(JRQueryExecuter queryExecuter)
 	{
-		this.queryExecuter = null;
+		this.queryExecuters.remove(queryExecuter);
 	}
 	
 	
@@ -354,12 +372,13 @@ public class JRFillContext
 	 */
 	public synchronized boolean cancelRunningQuery() throws JRException
 	{
-		if (queryExecuter != null)
+		boolean canceled = false;
+		for (JRQueryExecuter queryExecuter : queryExecuters.keySet())
 		{
-			return queryExecuter.cancelQuery();
+			boolean queryCanceled = queryExecuter.cancelQuery();
+			canceled = canceled || queryCanceled;
 		}
-		
-		return false;
+		return canceled;
 	}
 	
 	
@@ -434,7 +453,7 @@ public class JRFillContext
 	 * @see #getLoadedTemplate(Object)
 	 * @see #registerLoadedTemplate(Object, ReportTemplateSource)
 	 */
-	public boolean hasLoadedTemplate(Object source)
+	public synchronized boolean hasLoadedTemplate(Object source)
 	{
 		return loadedTemplates.containsKey(source); 
 	}
@@ -447,7 +466,7 @@ public class JRFillContext
 	 * @return the cached template
 	 * @see #registerLoadedTemplate(Object, ReportTemplateSource)
 	 */
-	public ReportTemplateSource getLoadedTemplate(Object source)
+	public synchronized ReportTemplateSource getLoadedTemplate(Object source)
 	{
 		return loadedTemplates.get(source); 
 	}
@@ -462,20 +481,27 @@ public class JRFillContext
 	 * @param templateSource the loaded template
 	 * @see #getLoadedTemplate(Object)
 	 */
-	public void registerLoadedTemplate(Object source, ReportTemplateSource templateSource)
+	public synchronized ReportTemplateSource registerLoadedTemplate(Object source, ReportTemplateSource templateSource)
 	{
+		ReportTemplateSource existingTemplate = loadedTemplates.get(source);
+		if (existingTemplate != null)
+		{
+			return existingTemplate;
+		}
+		
 		loadedTemplates.put(source, templateSource);
+		return templateSource;
 	}
 	
 
 	/**
 	 * 
 	 */
-	protected MarkupProcessor getMarkupProcessor(String markup)
+	protected MarkupProcessorFactory getMarkupProcessorFactory(String markup)
 	{
-		MarkupProcessor markupProcessor = markupProcessors.get(markup);
+		MarkupProcessorFactory factory = markupProcessorFactories.get(markup);
 		
-		if (markupProcessor == null)
+		if (factory == null)
 		{
 			String factoryClass = masterFiller.getPropertiesUtil().getProperty(MarkupProcessorFactory.PROPERTY_MARKUP_PROCESSOR_FACTORY_PREFIX + markup);
 			if (factoryClass == null)
@@ -487,7 +513,6 @@ public class JRFillContext
 						);
 			}
 
-			MarkupProcessorFactory factory = null;
 			try
 			{
 				factory = markupProcessorFactoryCache.getCachedInstance(factoryClass);
@@ -497,10 +522,15 @@ public class JRFillContext
 				throw new JRRuntimeException(e);
 			}
 			
-			markupProcessor = factory.createMarkupProcessor();
-			markupProcessors.put(markup, markupProcessor);
+			markupProcessorFactories.put(markup, factory);
 		}
-		
+		return factory;
+	}
+
+	protected synchronized MarkupProcessor getMarkupProcessor(String markup)
+	{
+		MarkupProcessorFactory factory = getMarkupProcessorFactory(markup);
+		MarkupProcessor markupProcessor = factory.createMarkupProcessor();
 		return markupProcessor;
 	}
 
@@ -512,7 +542,7 @@ public class JRFillContext
 	 * @param object the object to be searched or added
 	 * @return a duplicate of the object if found, or the passed object if not
 	 */
-	public <T extends Deduplicable> T deduplicate(T object)
+	public synchronized <T extends Deduplicable> T deduplicate(T object)
 	{
 		return deduplicableRegistry.deduplicate(object);
 	}
@@ -592,7 +622,7 @@ public class JRFillContext
 		return dataRecorder;
 	}
 
-	public void addDataRecordResult(FillDatasetPosition fillPosition, Object recorded)
+	public synchronized void addDataRecordResult(FillDatasetPosition fillPosition, Object recorded)
 	{
 		recordedData.add(new Pair<>(fillPosition, recorded));
 	}
@@ -621,14 +651,16 @@ public class JRFillContext
 		return canceled;
 	}
 	
-	public Object getFillCache(String key)
+	public synchronized <T> T getFillCache(String key, Supplier<T> cacheCreator)
 	{
-		return fillCaches.get(key);
-	}
-	
-	public void setFillCache(String key, Object value)
-	{
-		fillCaches.put(key, value);
+		@SuppressWarnings("unchecked")
+		T cachedValue = (T) fillCaches.get(key);
+		if (cachedValue == null)
+		{
+			cachedValue = cacheCreator.get();
+			fillCaches.put(key, cachedValue);
+		}
+		return cachedValue;
 	}
 
 	public void dispose()

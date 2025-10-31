@@ -137,7 +137,7 @@ public class JRFillReportTemplate implements JRReportTemplate
 					{
 						JRTemplate template = JRXmlTemplateLoader.getInstance(repositoryContext).loadTemplate(resourceLocation);
 						templateSource = ReportTemplateSource.of(template, resourceInfo);
-						filler.fillContext.registerLoadedTemplate(absoluteKey, templateSource);
+						templateSource = filler.fillContext.registerLoadedTemplate(absoluteKey, templateSource);
 					}
 				}
 			}
@@ -165,7 +165,7 @@ public class JRFillReportTemplate implements JRReportTemplate
 						);
 			}
 			
-			filler.fillContext.registerLoadedTemplate(cacheKey, templateSource);
+			templateSource = filler.fillContext.registerLoadedTemplate(cacheKey, templateSource);
 		}
 		return templateSource;
 	}
