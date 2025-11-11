@@ -5,6 +5,8 @@ JasperReports Library Change Log
 JasperReports 7.0.5 (2025-1x-xx)
 ---------------------------------------------
 
+- support for proportional table column resize using negative weight values convention;
+
 - minor bug fixes and improvements;
 
 
