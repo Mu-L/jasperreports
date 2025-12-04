@@ -91,7 +91,10 @@ public class StandardClassWhitelist implements ClassWhitelist
 				{
 					addPattern(whitelistClass);
 				}
-				classWhitelist.add(whitelistClass);
+				else
+				{
+					classWhitelist.add(whitelistClass);
+				}
 			}
 		}
 	}
