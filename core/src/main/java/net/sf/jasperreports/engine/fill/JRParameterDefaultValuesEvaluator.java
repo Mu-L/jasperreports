@@ -26,10 +26,14 @@ package net.sf.jasperreports.engine.fill;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.jasperreports.annotations.properties.Property;
+import net.sf.jasperreports.annotations.properties.PropertyScope;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.properties.PropertyConstants;
 import net.sf.jasperreports.repo.RepositoryContext;
 import net.sf.jasperreports.repo.SimpleRepositoryContext;
 
@@ -42,6 +46,16 @@ import net.sf.jasperreports.repo.SimpleRepositoryContext;
  */
 public final class JRParameterDefaultValuesEvaluator
 {
+	
+	@Property(
+			category = PropertyConstants.CATEGORY_OTHER,
+			scopes = {PropertyScope.CONTEXT, PropertyScope.REPORT, PropertyScope.DATASET},
+			sinceVersion = PropertyConstants.VERSION_7_0_6,
+			valueType = Boolean.class,
+			defaultValue = "false"
+			)
+	public static final String PROPERTY_PARAMETER_DEFAULTS_EVALUATOR_PREPARES_DATA = 
+			JRPropertiesUtil.PROPERTY_PREFIX + "parameter.defaults.evaluator.prepares.data";
 
 	/**
 	 * Evaluates the default values for the parameters of a report.

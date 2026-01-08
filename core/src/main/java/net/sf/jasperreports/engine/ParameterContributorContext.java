@@ -39,6 +39,7 @@ public class ParameterContributorContext implements Cloneable
 	private RepositoryContext repositoryContext;
 	private JRDataset dataset;
 	private Map<String,Object> parameterValues;
+	private boolean toPrepareData;
 
 	/**
 	 *
@@ -50,7 +51,7 @@ public class ParameterContributorContext implements Cloneable
 		)
 	{
 		this(SimpleRepositoryContext.of(jasperReportsContext),
-				dataset, parameterValues);
+				dataset, parameterValues, true);
 	}
 	
 	public ParameterContributorContext(
@@ -59,10 +60,21 @@ public class ParameterContributorContext implements Cloneable
 		Map<String,Object> parameterValues
 		)
 	{
+		this(repositoryContext, dataset, parameterValues, true);
+	}
+	
+	public ParameterContributorContext(
+		RepositoryContext repositoryContext,
+		JRDataset dataset,
+		Map<String,Object> parameterValues,
+		boolean toPrepareData
+		)
+	{
 		this.jasperReportsContext = repositoryContext.getJasperReportsContext();
 		this.repositoryContext = repositoryContext;
 		this.dataset = dataset;
 		this.parameterValues = parameterValues;
+		this.toPrepareData = toPrepareData;
 	}
 	
 	public ParameterContributorContext withRepositoryContext(RepositoryContext repositoryContext)
@@ -109,5 +121,10 @@ public class ParameterContributorContext implements Cloneable
 	public JRDataset getDataset()
 	{
 		return dataset;
+	}
+	
+	public boolean isToPrepareData()
+	{
+		return toPrepareData;
 	}
 }
