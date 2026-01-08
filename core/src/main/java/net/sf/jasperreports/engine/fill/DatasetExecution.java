@@ -72,6 +72,8 @@ public class DatasetExecution
 
 	public void evaluateParameters(BiConsumer<JRParameter, Object> parameterConsumer) throws JRException
 	{
+		boolean prepareData = fillDataset.getPropertiesUtil().getBooleanProperty(fillDataset, 
+				JRParameterDefaultValuesEvaluator.PROPERTY_PARAMETER_DEFAULTS_EVALUATOR_PREPARES_DATA, false);
 		try
 		{
 			runWithParameters(() -> 
@@ -84,7 +86,7 @@ public class DatasetExecution
 					parameterConsumer.accept(param, value);
 				}
 				return null;
-			});
+			}, prepareData);
 		}
 		catch (JRException e)
 		{
@@ -96,7 +98,7 @@ public class DatasetExecution
 		}
 	}
 	
-	protected <R> R runWithParameters(Callable<R> action) throws Exception
+	protected <R> R runWithParameters(Callable<R> action, boolean prepareData) throws Exception
 	{
 		fillDataset.createCalculator(report);
 		fillDataset.initCalculator();
@@ -105,7 +107,7 @@ public class DatasetExecution
 			JRResourcesFillUtil.setResourcesFillContext(parameterValues);
 		try
 		{
-			fillDataset.setParameterValues(parameterValues);
+			fillDataset.setParameterValues(parameterValues, prepareData);
 			
 			return action.call();
 		}
@@ -132,7 +134,7 @@ public class DatasetExecution
 			{
 				fillDataset.closeDatasource();
 			}
-		});
+		}, true);
 	}
 
 	protected static class ObjectFactory extends JRFillObjectFactory

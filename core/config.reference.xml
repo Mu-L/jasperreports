@@ -6056,6 +6056,16 @@ The property is set to <code>true</code> by default.  When set to <code>false</c
 are sorted according to the Unicode lexicographic order.
     </description>
   </configProperty>
+  
+  
+  <!-- net.sf.jasperreports.parameter.defaults.evaluator.prepares.data -->
+
+  <configProperty name="net.sf.jasperreports.parameter.defaults.evaluator.prepares.data">
+    <description>
+Property that determines whether evaluating parameter default values via <code>net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator</code>
+should prepare the data source for the report (for instance by loading and executing the report data adapter).
+    </description>
+  </configProperty>
 
 
   <!-- net.sf.jasperreports.svg.allow.external.resources -->
