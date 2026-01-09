@@ -84,6 +84,10 @@ public final class DataAdapterParameterContributorFactory implements ParameterCo
 	public List<ParameterContributor> getContributors(ParameterContributorContext context) throws JRException
 	{
 		List<ParameterContributor> contributors = new ArrayList<>();
+		if (!context.isToPrepareData())
+		{
+			return contributors;
+		}
 
 		String dataAdapterUri = JRPropertiesUtil.getOwnProperty(context.getDataset(), PROPERTY_DATA_ADAPTER_LOCATION);
 		if (dataAdapterUri == null)
