@@ -24,6 +24,7 @@
 package net.sf.jasperreports.engine.fill;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.javaflow.api.continuable;
 import org.apache.commons.logging.Log;
@@ -34,6 +35,7 @@ import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.JasperReport;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
@@ -111,6 +113,21 @@ public class FillerSubreportParent implements BandReportFillerParent
 		return true;
 	}
 
+	@Override
+	public JRVirtualizationContext getChildVirtualizationContext(JasperReport jasperReport, 
+			Map<String, Object> parameterValues) 
+	{
+		// TODO Auto-generated method stub
+		// this is a filler of a subreport in a band parent, creating a subcontext for the subreport.
+		// this allows setting a separate listener, and guarantees that
+		// the current subreport page is not externalized.
+		JRVirtualizationContext virtualizationContext = new JRVirtualizationContext(parentFiller.virtualizationContext);//FIXME lucianc clear this context from the virtualizer
+		
+		// setting per subreport page size
+		virtualizationContext.setVirtualPageSize(jasperReport, parameterValues);
+		return virtualizationContext;
+	}
+	
 	@Override
 	public boolean isSplitTypePreventInhibited(boolean isTopLevelCall)
 	{

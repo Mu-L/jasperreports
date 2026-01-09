@@ -514,7 +514,7 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 								newRenderer = RendererUtil.getInstance(repositoryContext).getNonLazyRenderable(absoluteLocation, getOnErrorType());
 								if (isUsingCache)
 								{
-									filler.fillContext.registerLoadedRenderer(absoluteKey, newRenderer);
+									newRenderer = filler.fillContext.registerLoadedRenderer(absoluteKey, newRenderer);
 								}
 							}
 						}						
@@ -573,7 +573,7 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 
 				if (isUsingCache)
 				{
-					filler.fillContext.registerLoadedRenderer(srcKey, newRenderer);
+					newRenderer = filler.fillContext.registerLoadedRenderer(srcKey, newRenderer);
 				}
 			}
 		}

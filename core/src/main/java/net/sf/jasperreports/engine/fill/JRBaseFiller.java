@@ -1141,13 +1141,12 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 			format = FormatUtils.getIcu4jNumberFormat(pattern, lc).orElseGet(
 					() -> getFormatFactory().createNumberFormat(pattern, lc));
 
-			if (log.isDebugEnabled())
-			{
-				log.debug("format is of type: " + format.getClass().getName());
-			}
-
 			if (format != null)
 			{
+				if (log.isDebugEnabled())
+				{
+					log.debug("format is of type: " + format.getClass().getName());
+				}
 				numberFormatCache.put(key, format);
 			}
 		}

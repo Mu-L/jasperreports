@@ -175,7 +175,7 @@ public class FillPartPrintOutput implements PartPrintOutput
 		{
 			if (styles.containsKey(style.getName()))
 			{
-				log.debug("style " + style.getName() + " alread present");
+				log.debug("style " + style.getName() + " already present");
 			}
 			else
 			{

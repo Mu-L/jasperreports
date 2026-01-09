@@ -56,14 +56,15 @@ public interface PartFillComponent
 	 * results to be used in {@link #fill(PartPrintOutput)}.
 	 * 
 	 * @param evaluation the evaluation type
+	 * @return the evaluated part component
 	 * @throws JRException
 	 */
-	void evaluate(byte evaluation) throws JRException;
+	Object evaluate(byte evaluation) throws JRException;
 
 	/**
 	 * Fills the component by creating a print element which will be included
 	 * in the generated report.
 	 */
-	void fill(PartPrintOutput output) throws JRException;
+	void fill(EvaluatedPart evaluatedPart, PartPrintOutput output) throws JRException;
 
 }

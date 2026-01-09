@@ -51,6 +51,7 @@ import net.sf.jasperreports.engine.JRVirtualizable;
 import net.sf.jasperreports.engine.JRVirtualizationHelper;
 import net.sf.jasperreports.engine.JRVirtualizer;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintElementId;
 import net.sf.jasperreports.engine.PrintElementVisitor;
@@ -163,6 +164,34 @@ public class JRVirtualizationContext implements Serializable, VirtualizationList
 	private void initLock()
 	{
 		lock = new ReentrantLock(true);
+	}
+	
+	public void setVirtualPageSize(JasperReport jasperReport, Map<String, Object> parameterValues)
+	{
+		// see if we have a parameter for the page size
+		Integer virtualPageSize = (Integer) parameterValues.get(
+				JRVirtualPrintPage.PROPERTY_VIRTUAL_PAGE_ELEMENT_SIZE);
+		if (virtualPageSize == null)
+		{
+			// check if we have a property
+			String pageSizeProp = jasperReport.getPropertiesMap().getProperty(
+					JRVirtualPrintPage.PROPERTY_VIRTUAL_PAGE_ELEMENT_SIZE);
+			if (pageSizeProp != null)
+			{
+				virtualPageSize = JRPropertiesUtil.asInteger(pageSizeProp);
+			}
+		}
+		
+		if (virtualPageSize != null)
+		{
+			if (log.isDebugEnabled())
+			{
+				log.debug("virtual page size " + virtualPageSize);
+			}
+			
+			// override the default
+			setPageElementSize(virtualPageSize);
+		}
 	}
 	
 	/**

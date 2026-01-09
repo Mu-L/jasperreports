@@ -45,13 +45,11 @@ public class ThreadPoolSubreportRunnerFactory implements JRSubreportRunnerFactor
 	public JRSubreportRunner createSubreportRunner(JRFillSubreport fillSubreport, JRBaseFiller subreportFiller)
 	{
 		JRFillContext fillContext = subreportFiller.getFillContext();
-		ExecutorServiceDisposable executor = (ExecutorServiceDisposable) fillContext.getFillCache(THREAD_POOL_KEY);
-		if (executor == null)
+		ExecutorServiceDisposable executor = fillContext.getFillCache(THREAD_POOL_KEY, () ->
 		{
 			ExecutorService threadExecutor = createThreadExecutor(fillContext);
-			executor = new ExecutorServiceDisposable(threadExecutor);
-			fillContext.setFillCache(THREAD_POOL_KEY, executor);
-		}
+			return new ExecutorServiceDisposable(threadExecutor);
+		});
 
 		return new ThreadExecutorSubreportRunner(fillSubreport, subreportFiller, 
 				executor.getExecutorService());
