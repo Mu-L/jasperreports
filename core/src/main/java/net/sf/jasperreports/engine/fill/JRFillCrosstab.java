@@ -1966,7 +1966,13 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 			
 			JRFillCellContents cell = titleCellContents;
 			int width = rowHeadersXOffsets[rowGroups.length] + columnXOffsets[lastColumnIndex] - columnXOffsets[startColumnIndex];
-			cell = cell.getTransformedContents(width, cell.getHeight(), getTitleCell().getContentsPosition(), CrosstabRowPositionEnum.TOP);
+			cell = 
+				cell.getTransformedContents(
+					width, 
+					cell.getHeight(), 
+					getTitleCell().getContentsPosition() == null ? CrosstabColumnPositionEnum.LEFT : getTitleCell().getContentsPosition(), 
+					CrosstabRowPositionEnum.TOP
+					);
 			
 			JRFillCellContents contents = cell.getWorkingClone();
 			contents.evaluate(JRExpression.EVALUATION_DEFAULT);
