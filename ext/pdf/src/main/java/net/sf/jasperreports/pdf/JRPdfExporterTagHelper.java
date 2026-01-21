@@ -40,6 +40,7 @@ import net.sf.jasperreports.crosstabs.JRCellContents;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintFrame;
 import net.sf.jasperreports.engine.JRPrintImage;
+import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.export.PdfConstants;
 import net.sf.jasperreports.engine.util.StyledTextListWriter;
 import net.sf.jasperreports.export.AccessibilityUtil;
@@ -276,6 +277,12 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			sinceVersion = PropertyConstants.VERSION_6_2_0
 			)
 	public static final String PROPERTY_TAG_H6 = JRPdfExporter.PDF_EXPORTER_PROPERTIES_PREFIX + "tag.h6";
+	@Property(
+			category = PropertyConstants.CATEGORY_EXPORT,
+			scopes = {PropertyScope.ELEMENT},
+			sinceVersion = PropertyConstants.VERSION_7_0_6
+			)
+	public static final String PROPERTY_TAG_ATTRIBUTE_ACTUAL_TEXT = JRPdfExporter.PDF_EXPORTER_PROPERTIES_PREFIX + "tag.attribute.ActualText";
 	
 	protected JRPdfExporter exporter;
 
@@ -519,22 +526,34 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 		}
 	}
 
-	protected void startText(boolean isHyperlink)
+	protected void startText(JRPrintText textElement)
 	{
-		if (isTagged)
-		{
-//			PdfStructureElement parentTag = tableCellTag == null ? (tableHeaderTag == null ? allTag : tableHeaderTag): tableCellTag;
-//			PdfStructureElement textTag = new PdfStructureElement(parentTag, PdfName.TEXT);
-			pdfStructure.beginTag(tagStack.peek(), isHyperlink ? "Link" : "Text");
-		}
+		startText(textElement, null);
 	}
 
-	protected void startText(String text, boolean isHyperlink)
+	protected void startText(JRPrintText textElement, String actualText)
 	{
 		if (isTagged)
 		{
-			pdfStructure.beginTag(tagStack.peek(), isHyperlink ? "Link" : "Text", 
-					text);
+			if (textElement.hasProperties() && textElement.getPropertiesMap().containsProperty(PROPERTY_TAG_ATTRIBUTE_ACTUAL_TEXT))
+            {
+				//FIXME the actual text repeats for each paragraph in multi-paragraph text elements, which is not good;
+				// the actual text should be an attribute of the paragraph in styled text
+				actualText = textElement.getPropertiesMap().getProperty(PROPERTY_TAG_ATTRIBUTE_ACTUAL_TEXT);
+            }
+			
+			PdfStructureEntry textEntry =
+				actualText == null
+				? pdfStructure.beginTag(tagStack.peek(), textElement.getLinkType() == null ? "Text" : "Link")
+				: pdfStructure.beginTag(tagStack.peek(), textElement.getLinkType() == null ? "Text" : "Link", actualText);
+
+			if (textElement.hasProperties())
+            {
+                if (textElement.getPropertiesMap().containsProperty(PdfExporterConfiguration.PROPERTY_TAG_LANGUAGE))
+                {
+                	textEntry.putString("Lang", textElement.getPropertiesMap().getProperty(PdfExporterConfiguration.PROPERTY_TAG_LANGUAGE));
+                }
+            }
 		}
 	}
 
