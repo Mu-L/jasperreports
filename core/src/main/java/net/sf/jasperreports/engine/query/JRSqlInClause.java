@@ -41,7 +41,6 @@ public class JRSqlInClause extends JRSqlAbstractInClause
 	 * and the optional third parameter of the clause is not provided.
 	 */
 	@Property(
-			name = "net.sf.jasperreports.sql.clause.in.novalues.result",
 			defaultValue = PropertyConstants.BOOLEAN_TRUE,
 			category = PropertyConstants.CATEGORY_DATA_SOURCE,
 			scopes = {PropertyScope.CONTEXT, PropertyScope.REPORT, PropertyScope.DATASET},

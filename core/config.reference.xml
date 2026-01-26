@@ -359,6 +359,24 @@ Property that specifies the list of token separators characters for <api href="n
     </description>
   </configProperty>
 
+  <!-- net.sf.jasperreports.sql.clause.notin.novalues.result -->
+
+  <configProperty name="net.sf.jasperreports.sql.clause.notin.novalues.result">
+    <description>
+Property that specifies the boolean result of the NOT IN clause of an SQL query when the list of values is null or empty and 
+the optional third parameter of the clause is not provided.
+    </description>
+  </configProperty>
+
+  <!-- net.sf.jasperreports.sql.clause.in.novalues.result -->
+
+  <configProperty name="net.sf.jasperreports.sql.clause.in.novalues.result">
+    <description>
+Property that specifies the boolean result of the IN clause of an SQL query when the list of values is null or empty and 
+the optional third parameter of the clause is not provided.
+    </description>
+  </configProperty>
+
 
   <!-- net.sf.jasperreports.query.executer.factory.{language} -->
 
@@ -5913,6 +5931,48 @@ flag needs to be set in order for the whitelist to apply.
     <description>
 This property specifies the maximum number of bytes that can be read from a stream when deserializing objects such as compiled report templates or generated reports.
 When not set, there is no limit.
+    </description>
+  </configProperty>
+  
+  
+  <!-- 	net.sf.jasperreports.web.resource.filter.enabled -->
+
+  <configProperty name="net.sf.jasperreports.web.resource.filter.enabled">
+    <description>
+Flag to enable filtering of Web resources that can be delivered from the repository.
+<br/>
+The list of allowed Web resources is configured via
+<a href="#net.sf.jasperreports.web.resource.paths.{arbitrary_name}">net.sf.jasperreports.web.resource.paths.{arbitrary_name}</a> and
+<a href="#net.sf.jasperreports.web.resource.pattern.{arbitrary_name}">net.sf.jasperreports.web.resource.pattern.{arbitrary_name}</a> 
+properties.
+    </description>
+  </configProperty>
+
+
+  <!-- 	net.sf.jasperreports.web.resource.paths.{arbitrary_name} -->
+
+  <configProperty name="net.sf.jasperreports.web.resource.paths.{arbitrary_name}">
+    <description>
+Defines a list of Web resources that are allowed to be delivered from the repository by the parent Web application.
+<br/>
+The property value should be a comma separated list of resource paths. Wildcards are not supported.
+<br/>
+The <a href="#net.sf.jasperreports.web.resource.filter.enabled">net.sf.jasperreports.web.resource.filter.enabled</a>
+flag needs to be set in order for the filter to apply.
+    </description>
+  </configProperty>
+  
+  
+  <!-- 	net.sf.jasperreports.web.resource.pattern.{arbitrary_name} -->
+  
+  <configProperty name="net.sf.jasperreports.web.resource.pattern.{arbitrary_name}">
+    <description>
+Defines a list of Web resources that are allowed to be delivered from the repository by the parent Web application.
+<br/>
+The property value should be a Java regular expression pattern for matching resource paths.
+<br/>
+The <a href="#net.sf.jasperreports.web.resource.filter.enabled">net.sf.jasperreports.web.resource.filter.enabled</a>
+flag needs to be set in order for the filter to apply.
     </description>
   </configProperty>
   
