@@ -775,4 +775,16 @@ export configuration setting. It specifies the path to the ICC profile file for 
   </configProperty>
   
   
+  <!-- net.sf.jasperreports.export.pdf.use.saved.line.breaks -->
+
+  <configProperty name="net.sf.jasperreports.export.pdf.use.saved.line.breaks">
+    <description>
+Property that determines whether the PDF exporter should make use of the text line break positions saved during the report fill.
+The property is only effective when the <code>net.sf.jasperreports.text.save.line.breaks</code> flag is set.
+<br/>
+The property assumes that the same font is used during report fill and for PDF exporting, therefore using font extensions for texts is recommended.
+    </description>
+  </configProperty>
+  
+  
 </configReference>

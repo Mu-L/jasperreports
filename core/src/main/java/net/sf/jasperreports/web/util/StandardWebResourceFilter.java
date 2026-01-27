@@ -128,6 +128,9 @@ public class StandardWebResourceFilter implements WebResourceFilter
 	private static void loadFontFamily(FontFamily fontFamily, StandardWebResourceWhitelist whitelist)
 	{
 		loadFontFace(fontFamily.getNormalFace(), whitelist);
+		loadFontFace(fontFamily.getBoldFace(), whitelist);
+		loadFontFace(fontFamily.getItalicFace(), whitelist);
+		loadFontFace(fontFamily.getBoldItalicFace(), whitelist);
 	}
 
 	private static void loadFontFace(FontFace fontFace, StandardWebResourceWhitelist whitelist)
