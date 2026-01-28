@@ -266,7 +266,7 @@
 					</ignoredUnusedDeclaredDependencies>
 					<ignoredUsedUndeclaredDependencies>
 						<!-- used through com.fasterxml.jackson.dataformat:jackson-format-xml -->
-					    <dependency>org.codehaus.woodstox:stax2-api</dependency>
+						<dependency>org.codehaus.woodstox:stax2-api</dependency>
 					</ignoredUsedUndeclaredDependencies>
 				</configuration>
 			</plugin>

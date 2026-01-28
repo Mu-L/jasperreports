@@ -92,7 +92,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-		    <version>${commons-lang3.version}</version>
+			<version>${commons-lang3.version}</version>
  			<scope>runtime</scope>
 			<optional>false</optional>
 		</dependency>
@@ -105,9 +105,9 @@
 				<version>${maven-dependency-plugin.version}</version>
 				<configuration>
 					<ignoredUnusedDeclaredDependencies>
-					    <dependency>net.sf.jasperreports:jasperreports-metadata</dependency>
-					    <dependency>net.sf.jasperreports:jasperreports-spring</dependency>
-					    <dependency>org.apache.commons:commons-lang3</dependency>
+						<dependency>net.sf.jasperreports:jasperreports-metadata</dependency>
+						<dependency>net.sf.jasperreports:jasperreports-spring</dependency>
+						<dependency>org.apache.commons:commons-lang3</dependency>
 					</ignoredUnusedDeclaredDependencies>
 				</configuration>
 			</plugin>

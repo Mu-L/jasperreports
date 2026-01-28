@@ -88,7 +88,7 @@
 				<version>${maven-dependency-plugin.version}</version>
 				<configuration>
 					<ignoredUnusedDeclaredDependencies>
-					    <dependency>net.sf.jasperreports:jasperreports-metadata</dependency>
+						<dependency>net.sf.jasperreports:jasperreports-metadata</dependency>
 					</ignoredUnusedDeclaredDependencies>
 				</configuration>
 			</plugin>
