@@ -70,7 +70,7 @@
 				<version>${maven-markdown-page-generator-plugin.version}</version>
 				<executions>
 					<execution>
-				 	<id>convert-to-html</id>
+						<id>convert-to-html</id>
 						<phase>process-resources</phase>
 						<goals>
 							<goal>generate</goal>
@@ -88,7 +88,7 @@
 						</configuration>
 					</execution>
 					<execution>
-				 	<id>convert-root-to-html</id>
+						<id>convert-root-to-html</id>
 						<phase>process-resources</phase>
 						<goals>
 							<goal>generate</goal>
