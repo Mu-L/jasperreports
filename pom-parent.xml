@@ -261,6 +261,13 @@
 				<configuration>
 					<failOnWarning>true</failOnWarning>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>analyze-only</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.owasp</groupId>
