@@ -68,8 +68,26 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-dom</artifactId>
+			<version>${batik.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
+			<version>${batik.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-svggen</artifactId>
 			<version>${batik.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -77,6 +95,12 @@
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>7.7.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>${commons-logging.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -107,6 +131,30 @@
 						<arg>-Xlint:deprecation,-unchecked,-options</arg>
 					</compilerArgs>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>${maven-dependency-plugin.version}</version>
+				<configuration>
+					<ignoredUnusedDeclaredDependencies>
+						<dependency>net.sf.jasperreports:jasperreports-jdt</dependency>
+						<dependency>net.sf.jasperreports:jasperreports-barbecue</dependency>
+						<dependency>net.sf.jasperreports:jasperreports-barcode4j</dependency>
+						<dependency>net.sf.jasperreports:jasperreports-data-adapters</dependency>
+						<dependency>net.sf.jasperreports:jasperreports-fonts</dependency>
+						<dependency>org.apache.logging.log4j:log4j-core</dependency>
+						<dependency>org.apache.logging.log4j:log4j-jcl</dependency>
+					</ignoredUnusedDeclaredDependencies>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>test-compile</phase><!-- default phase is verify; too late for tests -->
+						<goals>
+							<goal>analyze-only</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
