@@ -43,7 +43,8 @@
 				destdir="./build/reports"
 				tempdir="./build/reports"
 				keepjava="true"
-				xmlvalidation="true">
+				xmlvalidation="true"
+			    threads="0.5C">
 			<classpath refid="sample-classpath"/>
 			<include name="**/*.jrxml"/>
 		</jrc>
@@ -58,7 +59,8 @@
 				destdir="./build/reports"
 				tempdir="./build/reports"
 				keepjava="true"
-				xmlvalidation="true">
+				xmlvalidation="true"
+			    threads="4">
 			<src>
 				<fileset dir="./reports">
 					<include name="**/*.jrxml"/>
@@ -72,7 +74,7 @@
 		<taskdef name="jrdc" classname="net.sf.jasperreports.ant.JRAntDecompileTask"> 
 			<classpath refid="sample-classpath"/>
 		</taskdef>
-		<jrdc destdir="./build/reports">
+		<jrdc destdir="./build/reports" threads="4">
 			<src>
 				<fileset dir="./build/reports">
 					<include name="**/*.jasper"/>

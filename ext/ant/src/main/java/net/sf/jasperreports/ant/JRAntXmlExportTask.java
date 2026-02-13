@@ -24,10 +24,18 @@
 package net.sf.jasperreports.ant;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
@@ -54,6 +62,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
  * <ul>
  * <li>src
  * <li>destdir
+ * <li>threads
  * </ul>
  * Of these arguments, the <code>src</code> and <code>destdir</code> are required.
  * When this task executes, it will recursively scan the <code>src</code> and 
@@ -211,7 +220,7 @@ public class JRAntXmlExportTask extends JRBaseAntTask
 	 */
 	protected void scanSrc() throws BuildException
 	{
-		for(Iterator<Resource> it = src.iterator(); it.hasNext();)
+		for (Iterator<Resource> it = src.iterator(); it.hasNext();)
 		{
 			Resource resource = it.next();
 			FileResource fileResource = resource instanceof FileResource ? (FileResource)resource : null;
@@ -279,41 +288,51 @@ public class JRAntXmlExportTask extends JRBaseAntTask
 
 		if (files != null && files.size() > 0)
 		{
-			boolean isError = false;
-		
 			log("Exporting " + files.size() + " report files.");
 
-			String srcFileName = null;
-			String destFileName = null;
-			File destFileParent = null;
+			ExecutorService executorService = Executors.newFixedThreadPool(threads);
+			
+			List<Future<Void>> futures = new ArrayList<>(files.size());
 
-			for (Iterator<String> it = files.iterator(); it.hasNext();)
+			for (String srcFileName : files)
 			{
-				srcFileName = it.next();
-				destFileName = reportFilesMap.get(srcFileName);
-				destFileParent = new File(destFileName).getParentFile();
+				String destFileName = reportFilesMap.get(srcFileName);
+				File destFileParent = new File(destFileName).getParentFile();
 				if (!destFileParent.exists())
 				{
 					destFileParent.mkdirs();
 				}
 
+				futures.add(executorService.submit(new ExportTask(srcFileName, destFileName)));
+			}
+
+			for (Future<Void> future : futures)
+			{
 				try
 				{
-					JasperPrint jasperPrint = (JasperPrint)JRLoader.loadObjectFromFile(srcFileName);
-					
-					JasperExportManager.getInstance(jasperReportsContext).exportToXmlFile(jasperPrint, destFileName, false);
-					
-					log("File : " + srcFileName);
+					future.get();
 				}
-				catch (JRException e)
+				catch (ExecutionException | InterruptedException e)
 				{
-					log("Error exporting report : " + srcFileName);
 					log(e, Project.MSG_ERR);
-					isError = true;
+					error();
 				}
 			}
+			
+			executorService.shutdown();
+			try 
+			{
+			    if (!executorService.awaitTermination(800, TimeUnit.MILLISECONDS)) 
+			    {
+			        executorService.shutdownNow();
+			    } 
+			}
+			catch (InterruptedException e) 
+			{
+			    executorService.shutdownNow();
+			}
 		
-			if (isError)
+			if (isError())
 			{
 				throw new BuildException("Errors were encountered when updating report designs.");
 			}
@@ -321,4 +340,38 @@ public class JRAntXmlExportTask extends JRBaseAntTask
 	}
 	
 	
+	
+	
+	class ExportTask implements Callable<Void>
+	{
+		private String srcFileName;
+		private String destFileName;
+		
+		public ExportTask(String srcFileName, String destFileName)
+		{
+			this.srcFileName = srcFileName;
+			this.destFileName = destFileName;
+		}
+		
+		@Override
+		public Void call() throws Exception
+		{
+			try
+			{
+				JasperPrint jasperPrint = (JasperPrint)JRLoader.loadObjectFromFile(srcFileName);
+				
+				JasperExportManager.getInstance(jasperReportsContext).exportToXmlFile(jasperPrint, destFileName, false);
+				
+				log("File : " + srcFileName, Project.MSG_VERBOSE);
+			}
+			catch (JRException e)
+			{
+				log("Error exporting report : " + srcFileName);
+				log(e, Project.MSG_ERR);
+				error();
+			}
+			
+			return null;
+		}
+	}
 }
