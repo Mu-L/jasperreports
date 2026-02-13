@@ -24,14 +24,23 @@
 package net.sf.jasperreports.ant;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.resources.FileResource;
@@ -53,6 +62,7 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
  * <ul>
  * <li>src
  * <li>destdir
+ * <li>threads
  * </ul>
  * Of these arguments, the <code>src</code> and <code>destdir</code> are required.
  * When this task executes, it will recursively scan the <code>src</code> and 
@@ -209,7 +219,7 @@ public class JRAntDecompileTask extends JRBaseAntTask
 	 */
 	protected void scanSrc() throws BuildException
 	{
-		for(Iterator<Resource> it = src.iterator(); it.hasNext();)
+		for (Iterator<Resource> it = src.iterator(); it.hasNext();)
 		{
 			Resource resource = it.next();
 			FileResource fileResource = resource instanceof FileResource ? (FileResource)resource : null;
@@ -277,45 +287,86 @@ public class JRAntDecompileTask extends JRBaseAntTask
 
 		if (files != null && files.size() > 0)
 		{
-			boolean isError = false;
-		
-			System.out.println("Decompiling " + files.size() + " report design files.");
+			log("Decompiling " + files.size() + " report design files.");
+			
+			ExecutorService executorService = Executors.newFixedThreadPool(threads);
+			
+			List<Future<Void>> futures = new ArrayList<>(files.size());
 
-			for (Iterator<String> it = files.iterator(); it.hasNext();)
+			for (String srcFileName : files)
 			{
-				String srcFileName = it.next();
 				String destFileName = reportFilesMap.get(srcFileName);
 				File destFileParent = new File(destFileName).getParentFile();
-				if(!destFileParent.exists())
+				if (!destFileParent.exists())
 				{
 					destFileParent.mkdirs();
 				}
 
+				futures.add(executorService.submit(new DecompileTask(srcFileName, destFileName)));
+			}
+
+			for (Future<Void> future : futures)
+			{
 				try
 				{
-					System.out.print("File : " + srcFileName + " ... ");
-
-					JasperReport jasperReport = (JasperReport)JRLoader.loadObjectFromFile(srcFileName);
-					
-					new JRXmlWriter(jasperReportsContext).write(jasperReport, destFileName, "UTF-8");
-					
-					System.out.println("OK.");
+					future.get();
 				}
-				catch(JRException e)
+				catch (ExecutionException | InterruptedException e)
 				{
-					System.out.println("FAILED.");
-					System.out.println("Error decompiling report design : " + srcFileName);
-					e.printStackTrace(System.out);
-					isError = true;
+					log(e, Project.MSG_ERR);
+					error();
 				}
 			}
+			
+			executorService.shutdown();
+			try 
+			{
+			    if (!executorService.awaitTermination(800, TimeUnit.MILLISECONDS)) 
+			    {
+			        executorService.shutdownNow();
+			    } 
+			}
+			catch (InterruptedException e) 
+			{
+			    executorService.shutdownNow();
+			}
 		
-			if(isError)
+			if (isError())
 			{
 				throw new BuildException("Errors were encountered when decompiling report designs.");
 			}
 		}
 	}
-	
-	
+
+
+	class DecompileTask implements Callable<Void>
+	{
+		private String srcFileName;
+		private String destFileName;
+		
+		public DecompileTask(String srcFileName, String destFileName)
+		{
+			this.srcFileName = srcFileName;
+			this.destFileName = destFileName;
+		}
+		
+		@Override
+		public Void call() throws Exception
+		{
+			try
+			{
+				JasperReport jasperReport = (JasperReport)JRLoader.loadObjectFromFile(srcFileName);
+				new JRXmlWriter(jasperReportsContext).write(jasperReport, destFileName, "UTF-8");
+				log("File : " + srcFileName, Project.MSG_VERBOSE);
+			}
+			catch (JRException e)
+			{
+				log("Error decompiling report design : " + srcFileName);
+				log(e, Project.MSG_ERR);
+				error();
+			}
+			
+			return null;
+		}
+	}
 }
