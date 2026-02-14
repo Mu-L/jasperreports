@@ -320,7 +320,11 @@ public class JRAntApiWriteTask extends JRBaseAntTask
 	{
 		Collection<String> files = reportFilesMap.keySet();
 
-		if (files != null && files.size() > 0)
+		if (files == null || files.size() == 0)
+		{
+			log("No report design files to proces.");
+		}
+		else
 		{
 			log("Processing " + files.size() + " report design files.");
 
@@ -381,7 +385,11 @@ public class JRAntApiWriteTask extends JRBaseAntTask
 	{
 		Collection<String> files = reportFilesMap.keySet();
 
-		if (files != null && files.size() > 0)
+		if (files == null || files.size() == 0)
+		{
+			log("No API report design files to run.");
+		}
+		else
 		{
 			log("Running " + files.size() + " API report design files.");
 

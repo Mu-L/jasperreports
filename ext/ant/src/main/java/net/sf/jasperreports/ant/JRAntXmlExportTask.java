@@ -286,7 +286,11 @@ public class JRAntXmlExportTask extends JRBaseAntTask
 	{
 		Collection<String> files = reportFilesMap.keySet();
 
-		if (files != null && files.size() > 0)
+		if (files == null || files.size() == 0)
+		{
+			log("No report files to export.");
+		}
+		else
 		{
 			log("Exporting " + files.size() + " report files.");
 

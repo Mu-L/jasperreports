@@ -391,7 +391,11 @@ public class JRAntCompileTask extends JRBaseAntTask
 	{
 		Collection<String> files = reportFilesMap.keySet();
 
-		if (files != null && files.size() > 0)
+		if (files == null || files.size() == 0)
+		{
+			log("No report design files to compile.");
+		}
+		else
 		{
 			log("Compiling " + files.size() + " report design files.");
 

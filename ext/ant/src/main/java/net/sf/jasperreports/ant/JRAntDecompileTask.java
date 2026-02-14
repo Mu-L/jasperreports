@@ -285,7 +285,11 @@ public class JRAntDecompileTask extends JRBaseAntTask
 	{
 		Collection<String> files = reportFilesMap.keySet();
 
-		if (files != null && files.size() > 0)
+		if (files == null || files.size() == 0)
+		{
+			log("No report design files to decompile.");
+		}
+		else
 		{
 			log("Decompiling " + files.size() + " report design files.");
 			
