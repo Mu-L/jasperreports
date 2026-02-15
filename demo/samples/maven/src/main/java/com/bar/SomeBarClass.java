@@ -21,22 +21,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.maven;
-
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Mojo;
+package com.bar;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  */
-@Mojo(name = "hello")
-public class JasperReportsMojo extends AbstractMojo
+public class SomeBarClass
 {
-	@Override
-	public void execute() throws MojoExecutionException
+
+
+	/**
+	 *
+	 */
+	public static Boolean isToPrint()
 	{
-		getLog().info("Hello, world.");
+		return Boolean.TRUE;
 	}
+
+
 }
