@@ -60,22 +60,11 @@
 			<scope>compile</scope>
 			<optional>false</optional>
 		</dependency>
-		<!-- 
-			This needs to be here with scope compile, otherwise the JasperReports mojos would not load.
-			But if another JasperReports version is present in the plugin dependencies of the current project,
-			it takes precedence over the one provided here and shadows it.
-			This allows using version of JasperReports different from the one used to compile the plugin.
-			
-			Bringing JDT artifact instead of Core JasperReports artifact so that JDT compiler is used 
-			for report compilation and there is no fallback to javac compiler, which does not work because
-			we do not provide a classpath string for it.
-		-->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports-jdt</artifactId>
+			<artifactId>jasperreports-maven-plugin-bom</artifactId>
 			<version>${revision}</version>
-			<scope>compile</scope>
-			<optional>false</optional>
+			<type>pom</type>
 		</dependency>
 	</dependencies>
 </project>

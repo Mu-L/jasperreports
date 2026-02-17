@@ -39,6 +39,13 @@
 						<scope>runtime</scope>
 						<optional>false</optional>
 					</dependency>
+					<dependency>
+						<groupId>net.sf.jasperreports</groupId>
+						<artifactId>jasperreports-maven-plugin-bom</artifactId>
+						<version>${revision}</version>
+						<type>pom</type>
+						<exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
+					</dependency>
 					-->
 				</dependencies>
 			</plugin>
