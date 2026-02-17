@@ -17,7 +17,7 @@
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
 			<version>${revision}</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 			<optional>false</optional>
 		</dependency>
 	</dependencies>
@@ -30,15 +30,16 @@
 				<configuration>
 					<skip>false</skip>
 				</configuration>
-				<!-- FIXME make it work without JDT too -->
 				<dependencies>
+					<!--
 					<dependency>
 						<groupId>net.sf.jasperreports</groupId>
-						<artifactId>jasperreports-jdt</artifactId>
-						<version>${revision}</version>
+						<artifactId>jasperreports</artifactId>
+						<version>6.21.0</version>
 						<scope>runtime</scope>
 						<optional>false</optional>
 					</dependency>
+					-->
 				</dependencies>
 			</plugin>
 		</plugins>

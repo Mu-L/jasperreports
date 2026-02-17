@@ -17,6 +17,13 @@
 		<tag>${revision}</tag>
 		<url>${scmUrl}</url>
 	</scm>
+	<properties>
+		<maven.install.skip>false</maven.install.skip>
+		<maven.source.skip>false</maven.source.skip>
+		<maven.javadoc.skip>false</maven.javadoc.skip>
+		<maven.deploy.skip>false</maven.deploy.skip>
+		<maven.test.skip>false</maven.test.skip>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
@@ -50,14 +57,24 @@
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-compiler-api</artifactId>
 			<version>2.16.2</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 			<optional>false</optional>
 		</dependency>
+		<!-- 
+			This needs to be here with scope compile, otherwise the JasperReports mojos would not load.
+			But if another JasperReports version is present in the plugin dependencies of the current project,
+			it takes precedence over the one provided here and shadows it.
+			This allows using version of JasperReports different from the one used to compile the plugin.
+			
+			Bringing JDT artifact instead of Core JasperReports artifact so that JDT compiler is used 
+			for report compilation and there is no fallback to javac compiler, which does not work because
+			we do not provide a classpath string for it.
+		-->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports</artifactId>
+			<artifactId>jasperreports-jdt</artifactId>
 			<version>${revision}</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 			<optional>false</optional>
 		</dependency>
 	</dependencies>

@@ -54,6 +54,7 @@
 		<module>landscape</module>
 		<module>list</module>
 		<module>markup</module>
+		<module>maven</module>
 		<module>mondrian</module>
 		<module>nopagebreak</module>
 		<module>noreport</module>
