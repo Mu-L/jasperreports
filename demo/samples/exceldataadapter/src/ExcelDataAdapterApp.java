@@ -56,7 +56,6 @@ public class ExcelDataAdapterApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		fill();
 		pdf();
 		html();

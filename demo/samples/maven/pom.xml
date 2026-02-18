@@ -24,21 +24,36 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>${source.version}</source>
+					<target>${target.version}</target>
+					<showWarnings>true</showWarnings>
+					<fork>true</fork><!-- TODO lucianc is this ok? -->
+					<compilerArgument>-Xlint:deprecation,-unchecked,-options</compilerArgument>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>net.sf.jasperreports</groupId>
 				<artifactId>jasperreports-maven-plugin</artifactId>
 				<version>${revision}</version>
+				<inherited>false</inherited>
 				<configuration>
 					<skip>false</skip>
 				</configuration>
+				<executions>
+					<execution>
+						<id>compile-reports</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
 				<dependencies>
 					<!--
-					<dependency>
-						<groupId>net.sf.jasperreports</groupId>
-						<artifactId>jasperreports</artifactId>
-						<version>6.21.0</version>
-						<scope>runtime</scope>
-						<optional>false</optional>
-					</dependency>
 					<dependency>
 						<groupId>net.sf.jasperreports</groupId>
 						<artifactId>jasperreports-maven-plugin-bom</artifactId>
@@ -46,8 +61,33 @@
 						<type>pom</type>
 						<exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions>
 					</dependency>
+					<dependency>
+						<groupId>net.sf.jasperreports</groupId>
+						<artifactId>jasperreports</artifactId>
+						<version>6.21.0</version>
+						<scope>runtime</scope>
+						<optional>false</optional>
+					</dependency>
 					-->
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${exec-maven-plugin.version}</version>
+				<executions>
+					<!-- 
+					This execution is placed here so that when exec:exec@all is called to run all the sample modules,
+					the current project does not actually do anything, and does not crash either.
+					 -->
+					<execution>
+						<id>all</id>
+						<configuration>
+							<executable>java</executable>
+							<skip>true</skip>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

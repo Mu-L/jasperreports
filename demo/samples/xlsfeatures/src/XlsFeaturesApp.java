@@ -58,7 +58,6 @@ public class XlsFeaturesApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		fill();
 		xls();
 		xlsx();

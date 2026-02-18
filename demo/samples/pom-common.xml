@@ -139,6 +139,24 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>net.sf.jasperreports</groupId>
+				<artifactId>jasperreports-maven-plugin</artifactId>
+				<version>${revision}</version>
+				<configuration>
+					<sourceDirectory>${project.basedir}/reports</sourceDirectory>
+					<outputDirectory>${project.build.directory}/reports</outputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>compile-reports</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>${exec-maven-plugin.version}</version>

@@ -53,7 +53,7 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 
 
 /**
- * Compiles JasperReports report design *.jrxml files to *.jasper files.
+ * Compiles JasperReports source report design *.jrxml files to compiled report design *.jasper files.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  */
 @Mojo(name = "compile", requiresDependencyResolution = ResolutionScope.RUNTIME)
@@ -75,7 +75,7 @@ public class JasperReportsCompileMojo extends AbstractJasperReportsMojo
 	private File sourceDirectory;
 
 	/**
-	 * The directory where the compiled report *.jasper files will be generated.
+	 * The directory where the compiled report design *.jasper files will be generated.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/reports")
 	private File outputDirectory;
@@ -86,7 +86,7 @@ public class JasperReportsCompileMojo extends AbstractJasperReportsMojo
 	{
 		if (skip)
 		{
-			getLog().info("JasperReports compiling files.");
+			getLog().info("Skipping report design files compilation.");
 			return;
 		}
 

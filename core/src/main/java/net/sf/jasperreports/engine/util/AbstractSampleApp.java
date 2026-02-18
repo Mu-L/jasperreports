@@ -37,7 +37,6 @@ import java.util.TreeSet;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRReport;
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
@@ -182,45 +181,6 @@ public abstract class AbstractSampleApp
 	 *
 	 */
 	public abstract void test() throws JRException;
-
-
-	/**
-	 *
-	 */
-	public void compile() throws JRException
-	{
-		File[] files = getFiles(new File("reports"), "jrxml");
-		if (files.length > 0)
-		{
-			File destFileParent = new File("target/reports");
-			if (!destFileParent.exists())
-			{
-				destFileParent.mkdirs();
-			}
-
-			System.out.println("Compiling " + files.length + " report design files."); // deliberately using System.out.println instead of logging in the sample apps
-
-			for (int i = 0; i < files.length; i++)
-			{
-				File srcFile = files[i];
-				String srcFileName = srcFile.getName();
-				String destFileName = srcFileName.substring(0, srcFileName.lastIndexOf(".jrxml")) + ".jasper";
-
-				System.out.print("Compiling: " + srcFileName + " ... ");
-
-				JasperCompileManager.compileReportToFile(
-					srcFile.getAbsolutePath(),
-					new File(destFileParent, destFileName).getAbsolutePath()
-					);
-
-				System.out.println("OK.");
-			}
-		}
-		else
-		{
-			System.out.println("No report design files found to compile.");
-		}
-	}
 
 
 	/**

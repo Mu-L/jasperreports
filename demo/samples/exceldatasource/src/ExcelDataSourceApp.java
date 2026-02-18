@@ -71,7 +71,6 @@ public class ExcelDataSourceApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		fill1();
 		fill2();
 		pdf();

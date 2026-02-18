@@ -11,6 +11,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<sample.base.name>NoXmlDesign</sample.base.name>
+		<jasperreports.compile.skip>true</jasperreports.compile.skip>
 	</properties>
 	<dependencies>
 		<dependency>
