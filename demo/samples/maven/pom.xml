@@ -10,6 +10,7 @@
 	<artifactId>jasperreports-samples-maven</artifactId>
 	<packaging>jar</packaging>
 	<properties>
+		<maven.test.skip>false</maven.test.skip>
 		<maven.buildNumber.doCheck>false</maven.buildNumber.doCheck>
 	</properties>
 	<dependencies>
@@ -59,6 +60,13 @@
 							</updaters>
 						</configuration>
 					</execution>
+					<execution>
+						<id>test-compile-reports</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
 				</executions>
 				<dependencies>
 					<!-- 
@@ -95,8 +103,13 @@
 					<execution>
 						<id>all</id>
 						<configuration>
-							<executable>java</executable>
-							<skip>true</skip>
+							<executable>mvn</executable>
+							<arguments>
+								<argument>test-compile</argument>
+								<argument>jasperreports:decompile</argument>
+								<argument>jasperreports:update</argument>
+							</arguments>
+							<workingDirectory>${project.basedir}</workingDirectory>
 						</configuration>
 					</execution>
 				</executions>

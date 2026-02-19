@@ -41,9 +41,9 @@ public abstract class AbstractJasperReportsMojo extends AbstractMojo
 	 * The value should be a positive integer representing the number of threads, or a float number representing a multiplier 
 	 * of the number of CPU cores, when followed by the letter C.
 	 * For example, 2C means twice the number of CPU cores, while 0.5C means half the number of CPU cores.
-	 * The default is 0.5C.
+	 * The default is 1.5C.
 	 */
-	@Parameter(defaultValue = "0.5C")
+	@Parameter(defaultValue = "1.5C")
 	private String threads;
 	
 	private boolean isError;

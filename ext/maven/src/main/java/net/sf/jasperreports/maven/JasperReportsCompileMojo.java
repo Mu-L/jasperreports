@@ -60,10 +60,10 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 public class JasperReportsCompileMojo extends AbstractJasperReportsMojo
 {
 	@Parameter(defaultValue = "${project}", required = true, readonly = true)
-	private MavenProject project;
+	protected MavenProject project;
 	
 	/**
-	 * Flag to skip the report compilation goal.
+	 * Flag to skip the reports compilation goal.
 	 */
 	@Parameter(property = "jasperreports.compile.skip", defaultValue = "false")
 	private boolean skip;
@@ -79,6 +79,24 @@ public class JasperReportsCompileMojo extends AbstractJasperReportsMojo
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/reports")
 	private File outputDirectory;
+	
+	
+	protected File getSourceDirectory()
+	{
+		return sourceDirectory;
+	}
+
+	
+	protected File getOutputDirectory()
+	{
+		return outputDirectory;
+	}
+	
+	
+	protected List<String> getClasspathElements() throws DependencyResolutionRequiredException
+	{
+		return project.getRuntimeClasspathElements();
+	}
 
 	
 	@Override
@@ -98,11 +116,11 @@ public class JasperReportsCompileMojo extends AbstractJasperReportsMojo
 		
 		try
 		{
-			sources = scanner.getIncludedSources(sourceDirectory, outputDirectory);
+			sources = scanner.getIncludedSources(getSourceDirectory(), getOutputDirectory());
 		}
 		catch (InclusionScanException e)
 		{
-			throw new MojoExecutionException("Error scanning source files in folder : " + sourceDirectory.getAbsolutePath(), e);
+			throw new MojoExecutionException("Error scanning source files in folder : " + getSourceDirectory().getAbsolutePath(), e);
 		}
 		
 		if (sources == null || sources.size() == 0)
@@ -118,7 +136,7 @@ public class JasperReportsCompileMojo extends AbstractJasperReportsMojo
 			try
 			{
 				@SuppressWarnings("rawtypes")
-				List classpathElements = project.getRuntimeClasspathElements();
+				List classpathElements = getClasspathElements();
 				if (classpathElements != null && !classpathElements.isEmpty())
 				{
 					getLog().debug("URLs added to classpath:");
@@ -171,8 +189,8 @@ public class JasperReportsCompileMojo extends AbstractJasperReportsMojo
             {
                 destFile =
                 	mapping.getTargetFiles(
-                		outputDirectory, 
-                		sourceDirectory.toPath().relativize(srcFile.toPath()).toString()
+                		getOutputDirectory(), 
+                		getSourceDirectory().toPath().relativize(srcFile.toPath()).toString()
                 		).iterator().next();
             }
             catch (InclusionScanException e)

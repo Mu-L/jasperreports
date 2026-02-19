@@ -44,7 +44,7 @@
 				tempdir="./build/reports"
 				keepjava="true"
 				xmlvalidation="true"
-			    threads="0.5C">
+			    threads="1.5C">
 			<classpath refid="sample-classpath"/>
 			<include name="**/*.jrxml"/>
 		</jrc>

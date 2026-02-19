@@ -65,7 +65,7 @@ Then, the custom `jrc` task is used to compile report templates having the `*.jr
     tempdir="./build/reports"
     keepjava="true"
     xmlvalidation="true"
-    threads="0.5C">
+    threads="1.5C">
   <classpath refid="sample-classpath"/>
   <include name="**/*.jrxml"/>
   </jrc>
