@@ -218,7 +218,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}/classes/META-INF</outputDirectory>
+							<outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
 							<resources>
 								<resource>
 									<directory>${jasperreports.root.dir}</directory>
