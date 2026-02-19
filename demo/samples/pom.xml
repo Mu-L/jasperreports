@@ -93,6 +93,14 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>net.sf.jasperreports</groupId>
+				<artifactId>jasperreports-maven-plugin</artifactId>
+				<version>${revision}</version>
+				<configuration>
+				    <skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>${exec-maven-plugin.version}</version>

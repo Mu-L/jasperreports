@@ -12,6 +12,7 @@
 	<properties>
 		<sample.base.name>NoXmlDesign</sample.base.name>
 		<jasperreports.compile.skip>true</jasperreports.compile.skip>
+		<jasperreports.decompile.skip>true</jasperreports.decompile.skip>
 	</properties>
 	<dependencies>
 		<dependency>

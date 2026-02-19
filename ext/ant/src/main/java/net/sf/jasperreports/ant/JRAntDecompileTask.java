@@ -162,7 +162,7 @@ public class JRAntDecompileTask extends JRBaseAntTask
 		AntClassLoader classLoader = null;
 		if (classpath != null)
 		{
-			jasperReportsContext.setProperty(JRCompiler.COMPILER_CLASSPATH, String.valueOf(classpath));//FIXMECONTEXT is this needed? what about class loader below/
+			jasperReportsContext.setProperty(JRCompiler.COMPILER_CLASSPATH, String.valueOf(classpath));//FIXMECONTEXT is this needed?
 			
 			ClassLoader parentClassLoader = getClass().getClassLoader();
 			classLoader = new AntClassLoader(parentClassLoader, getProject(), classpath, true);
@@ -359,8 +359,11 @@ public class JRAntDecompileTask extends JRBaseAntTask
 		{
 			try
 			{
-				JasperReport jasperReport = (JasperReport)JRLoader.loadObjectFromFile(srcFileName);
-				new JRXmlWriter(jasperReportsContext).write(jasperReport, destFileName, "UTF-8");
+				new JRXmlWriter(jasperReportsContext).write(
+					(JasperReport)JRLoader.loadObjectFromFile(srcFileName), 
+					destFileName, 
+					"UTF-8"
+					);
 				log("File : " + srcFileName, Project.MSG_VERBOSE);
 			}
 			catch (JRException e)

@@ -142,10 +142,6 @@
 				<groupId>net.sf.jasperreports</groupId>
 				<artifactId>jasperreports-maven-plugin</artifactId>
 				<version>${revision}</version>
-				<configuration>
-					<sourceDirectory>${project.basedir}/reports</sourceDirectory>
-					<outputDirectory>${project.build.directory}/reports</outputDirectory>
-				</configuration>
 				<executions>
 					<execution>
 						<id>compile-reports</id>
@@ -153,6 +149,18 @@
 						<goals>
 							<goal>compile</goal>
 						</goals>
+						<configuration>
+							<sourceDirectory>${project.basedir}/reports</sourceDirectory>
+							<outputDirectory>${project.build.directory}/reports</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<!-- this is for decompile, as update goal is not expected to be called on all samples -->
+						<id>default-cli</id>
+						<configuration>
+							<sourceDirectory>${project.build.directory}/reports</sourceDirectory>
+							<outputDirectory>${project.build.directory}/reports</outputDirectory>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

@@ -56,7 +56,7 @@ import net.sf.jasperreports.engine.JasperCompileManager;
  * Compiles JasperReports source report design *.jrxml files to compiled report design *.jasper files.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  */
-@Mojo(name = "compile", requiresDependencyResolution = ResolutionScope.RUNTIME)
+@Mojo(name = "compile", requiresDependencyResolution = ResolutionScope.RUNTIME, threadSafe = true)
 public class JasperReportsCompileMojo extends AbstractJasperReportsMojo
 {
 	@Parameter(defaultValue = "${project}", required = true, readonly = true)
@@ -121,10 +121,12 @@ public class JasperReportsCompileMojo extends AbstractJasperReportsMojo
 				List classpathElements = project.getRuntimeClasspathElements();
 				if (classpathElements != null && !classpathElements.isEmpty())
 				{
+					getLog().debug("URLs added to classpath:");
 					List<URL> urls = new ArrayList<URL>(classpathElements.size());
 					for (Object element : classpathElements)
 					{
 						urls.add(new File(element.toString()).toURI().toURL());
+						getLog().debug(element.toString());
 					}
 					newClassLoader = new URLClassLoader((URL[]) urls.toArray(new URL[urls.size()]), Thread.currentThread().getContextClassLoader());
 				}

@@ -39,10 +39,6 @@
 				<groupId>net.sf.jasperreports</groupId>
 				<artifactId>jasperreports-maven-plugin</artifactId>
 				<version>${revision}</version>
-				<inherited>false</inherited>
-				<configuration>
-					<skip>false</skip>
-				</configuration>
 				<executions>
 					<execution>
 						<id>compile-reports</id>
@@ -51,8 +47,24 @@
 							<goal>compile</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>default-cli</id>
+						<configuration>
+							<sourceDirectoryDecompile>${project.build.directory}/reports</sourceDirectoryDecompile>
+							<outputDirectoryDecompile>${project.build.directory}/reports-decompile</outputDirectoryDecompile>
+							<outputDirectoryUpdate>${project.build.directory}/reports-update</outputDirectoryUpdate>
+							<updaters>
+								<updater>com.update.RenewUuidsUpdater</updater>
+								<updater>com.update.StyleUpdater</updater>
+							</updaters>
+						</configuration>
+					</execution>
 				</executions>
 				<dependencies>
+					<!-- 
+						Use dependencies like the ones commented below 
+						to switch to a different version of JasperReports
+					-->
 					<!--
 					<dependency>
 						<groupId>net.sf.jasperreports</groupId>

@@ -12,5 +12,6 @@
 	<properties>
 		<sample.base.name>PrintService</sample.base.name>
 		<jasperreports.compile.skip>true</jasperreports.compile.skip>
+		<jasperreports.decompile.skip>true</jasperreports.decompile.skip>
 	</properties>
 </project>

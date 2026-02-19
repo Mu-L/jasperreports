@@ -37,7 +37,6 @@ import java.util.TreeSet;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRReport;
-import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
@@ -181,46 +180,6 @@ public abstract class AbstractSampleApp
 	 *
 	 */
 	public abstract void test() throws JRException;
-
-
-	/**
-	 *
-	 */
-	public void decompile() throws JRException
-	{
-		File[] files = getFiles(new File("target/reports"), "jasper");
-		if (files.length > 0)
-		{
-			File destFileParent = new File("target/reports");
-			if (!destFileParent.exists())
-			{
-				destFileParent.mkdirs();
-			}
-
-			System.out.println("Decompiling " + files.length + " report design files.");
-
-			for (int i = 0; i < files.length; i++)
-			{
-				File srcFile = files[i];
-				String srcFileName = srcFile.getName();
-				String destFileName = srcFileName + ".jrxml";
-
-				System.out.print("Decompiling: " + srcFileName + " ... ");
-
-				new JRXmlWriter(DefaultJasperReportsContext.getInstance()).write(
-					(JasperReport)JRLoader.loadObjectFromFile(srcFile.getAbsolutePath()), 
-					new File(destFileParent, destFileName).getAbsolutePath(), 
-					"UTF-8"
-					);
-
-				System.out.println("OK.");
-			}
-		}
-		else
-		{
-			System.out.println("No report design files found to decompile.");
-		}
-	}
 
 
 	/**
