@@ -65,7 +65,7 @@
 									</element>
 									<element kind="image" uuid="2719d9f4-8092-4a8b-96f2-4ae8e6893b80" x="0" y="0" width="50" height="60">
 										<printWhenExpression><![CDATA[$F{image} != null]]></printWhenExpression>
-										<expression><![CDATA["http://localhost:8080/image.jsp?name=" + $F{image}]]></expression>
+										<expression><![CDATA["http://localhost:58080/image.jsp?name=" + $F{image}]]></expression>
 									</element>
 									<element kind="textField" uuid="01569877-14f7-446d-b7bc-822f76698abe" x="55" y="0" width="114" height="12" textAdjust="StretchHeight" bold="true">
 										<expression><![CDATA[$F{name}]]></expression>

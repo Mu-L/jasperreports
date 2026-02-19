@@ -29,4 +29,17 @@
 			<optional>false</optional>
 		</dependency>
 	</dependencies>
+	<build>
+		<directory>target-javaflow</directory>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<version>${flatten-maven-plugin.version}</version>
+				<configuration>
+					<flattenedPomFilename>.flattened-pom-javaflow.xml</flattenedPomFilename>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
