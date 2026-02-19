@@ -154,6 +154,8 @@ public class JacksonUtil
 	
 	public XmlMapper getXmlMapper()
 	{
+		//FIXME if the JasperReportsContext instance is shared but the thread classloader changes, 
+		// the cached object does not have extensions from the current classloader
 		XmlMapper mapper = (XmlMapper)jasperReportsContext.getOwnValue(XML_MAPPER_CONTEXT_KEY);
 		if (mapper == null)
 		{
