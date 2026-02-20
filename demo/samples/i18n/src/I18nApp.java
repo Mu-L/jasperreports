@@ -72,7 +72,6 @@ public class I18nApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		fillDefault();
 		pdf();
 		xmlEmbed();

@@ -56,7 +56,6 @@ public class PdfAApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		fill();
 		pdfa();
 	}

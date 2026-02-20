@@ -107,7 +107,6 @@ public class NoXmlDesignApp extends AbstractSampleApp
 	}
 	
 	
-	@Override
 	public void compile() throws JRException
 	{
 		long start = System.currentTimeMillis();

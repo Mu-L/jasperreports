@@ -82,7 +82,6 @@ public class JasperApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		fill();
 		pdf();
 		pdfa1();

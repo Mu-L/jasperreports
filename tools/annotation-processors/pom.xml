@@ -67,7 +67,7 @@
 				<version>${maven-jar-plugin.version}</version>
 				<configuration>
 					<archive>
-						<manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
+						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
 					</archive>
 				</configuration>
 			</plugin>

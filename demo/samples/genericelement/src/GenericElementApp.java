@@ -47,7 +47,6 @@ public class GenericElementApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		fill();
 		xmlEmbed();
 		xml();
