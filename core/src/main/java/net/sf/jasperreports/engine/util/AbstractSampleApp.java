@@ -80,9 +80,10 @@ public abstract class AbstractSampleApp
 
 	
 	/**
-	 *
+	 * 
+	 * @throws Throwable 
 	 */
-	protected void executeTask(String taskName)
+	protected void executeTask(String taskName) throws Throwable
 	{
 		try
 		{
@@ -93,9 +94,13 @@ public abstract class AbstractSampleApp
 		{
 			System.out.println(usage());
 		}
-		catch (IllegalAccessException | InvocationTargetException e)
+		catch (IllegalAccessException e)
 		{
-			e.getCause().printStackTrace();
+			throw e;
+		}
+		catch (InvocationTargetException e)
+		{
+			throw e.getCause();
 		}
 	}
 	
@@ -169,9 +174,10 @@ public abstract class AbstractSampleApp
 				System.out.println(app.usage());
 			}
 		}
-		catch (Exception e)
+		catch (Throwable e)
 		{
 			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 
