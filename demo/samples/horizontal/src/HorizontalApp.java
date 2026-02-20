@@ -71,7 +71,6 @@ public class HorizontalApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		fill();
 		pdf();
 		xmlEmbed();

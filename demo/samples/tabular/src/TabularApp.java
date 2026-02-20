@@ -71,7 +71,6 @@ public class TabularApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		fill();
 		pdf();
 		pdfa1();

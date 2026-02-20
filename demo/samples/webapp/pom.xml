@@ -9,6 +9,10 @@
 	</parent>
 	<artifactId>jasperreports-samples-webapp</artifactId>
 	<packaging>war</packaging>
+	<properties>
+		<jasperreports.compile.skip>true</jasperreports.compile.skip>
+		<jasperreports.decompile.skip>true</jasperreports.decompile.skip>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
