@@ -10,6 +10,7 @@
 	<artifactId>jasperreports-samples-webapp</artifactId>
 	<packaging>war</packaging>
 	<properties>
+		<exec.skip>true</exec.skip>
 		<jasperreports.compile.skip>true</jasperreports.compile.skip>
 		<jasperreports.decompile.skip>true</jasperreports.decompile.skip>
 	</properties>
@@ -41,24 +42,6 @@
 					<stopKey>foo</stopKey>
 					<deployMode>FORK</deployMode>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>${exec-maven-plugin.version}</version>
-				<executions>
-					<!-- 
-					This execution is placed here so that when exec:exec@all is called to run all the sample modules,
-					the current parent project does not actually do anything, and does not crash either.
-					 -->
-					<execution>
-						<id>all</id>
-						<configuration>
-							<executable>java</executable>
-							<skip>true</skip>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
