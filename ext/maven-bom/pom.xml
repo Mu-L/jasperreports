@@ -18,8 +18,8 @@
 		<url>${scmUrl}</url>
 	</scm>
 	<properties>
-		<maven.install.skip>false</maven.install.skip>
 		<maven.deploy.skip>false</maven.deploy.skip>
+		<maven.install.skip>false</maven.install.skip>
 	</properties>
 	<dependencies>
 		<dependency>
