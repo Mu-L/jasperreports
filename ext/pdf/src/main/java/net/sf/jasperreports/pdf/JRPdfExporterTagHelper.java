@@ -382,11 +382,9 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			if (crtCrosstabRowY >= 0) //crosstab still open
 			{
 				//end the current row
-				//pdfContentByte.endMarkedContentSequence();
 				tagStack.pop();
 				
 				//end the table
-				//pdfContentByte.endMarkedContentSequence();
 				tagStack.pop();
 			}
 		}
@@ -419,7 +417,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 						//this is the first cell on a new row
 
 						//end the current row
-						//pdfContentByte.endMarkedContentSequence();
 						tagStack.pop();
 						
 						if (
@@ -429,7 +426,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 							)
 						{
 							//end the table
-							//pdfContentByte.endMarkedContentSequence();
 							tagStack.pop();
 
 							//start table
@@ -464,11 +460,9 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 						//normal element outside crosstab
 						
 						//end the current row
-						//pdfContentByte.endMarkedContentSequence();
 						tagStack.pop();
 						
 						//end the table
-						//pdfContentByte.endMarkedContentSequence();
 						tagStack.pop();
 						
 						//end crosstab
@@ -664,7 +658,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			)
 		{
 			PdfStructureEntry headingTag = pdfStructure.createTag(tagStack.peek(), accessibilityTag.name());
-			//pdfContentByte.beginMarkedContentSequence(headingTag);
 			headingTag.putArray("K");
 			tagStack.push(headingTag);
 			isTagEmpty = true;
@@ -675,7 +668,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createTableStartTag()
 	{
 		PdfStructureEntry tableTag = pdfStructure.createTag(allTag, "Table");
-		//pdfContentByte.beginMarkedContentSequence(tableTag);
 		tableTag.putArray("K");
 		tagStack.push(tableTag);
 	}
@@ -684,7 +676,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createTrStartTag()
 	{
 		PdfStructureEntry tableRowTag = pdfStructure.createTag(tagStack.peek(), "TR");
-		//pdfContentByte.beginMarkedContentSequence(tableRowTag);
 		tableRowTag.putArray("K");
 		tagStack.push(tableRowTag);
 	}
@@ -693,7 +684,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createThStartTag(JRPrintElement element)
 	{
 		PdfStructureEntry tableHeaderTag = pdfStructure.createTag(tagStack.peek(), "TH");
-		//pdfContentByte.beginMarkedContentSequence(tableHeaderTag);
 		tableHeaderTag.putArray("K");
 		tagStack.push(tableHeaderTag);
 		isTagEmpty = true;
@@ -705,7 +695,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createTdStartTag(JRPrintElement element)
 	{
 		PdfStructureEntry tableCellTag = pdfStructure.createTag(tagStack.peek(), "TD");
-		//pdfContentByte.beginMarkedContentSequence(tableCellTag);
 		tableCellTag.putArray("K");
 		tagStack.push(tableCellTag);
 		isTagEmpty = true;
@@ -760,7 +749,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createListStartTag()
 	{
 		PdfStructureEntry listTag = pdfStructure.createTag(tagStack.peek(), "L");
-		//pdfContentByte.beginMarkedContentSequence(tableTag);
 		listTag.putArray("K");
 		tagStack.push(listTag);
 	}
@@ -769,7 +757,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createStartTag(JRPrintElement element, String pdfTag)
 	{
 		PdfStructureEntry tag = pdfStructure.createTag(tagStack.peek(), pdfTag);
-		//pdfContentByte.beginMarkedContentSequence(tableHeaderTag);
 		tag.putArray("K");
 		tagStack.push(tag);
 		isTagEmpty = true;
@@ -797,7 +784,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			String prop = element.getPropertiesMap().getProperty(PROPERTY_TAG_L);
 			if (PdfConstants.TAG_END.equals(prop) || PdfConstants.TAG_FULL.equals(prop))
 			{
-				//pdfContentByte.endMarkedContentSequence();
 				tagStack.pop();
 			}
 
@@ -809,8 +795,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 					|| JRCellContents.TYPE_ROW_HEADER.equals(prop)
 					|| JRCellContents.TYPE_DATA.equals(prop)))
 			{
-				//pdfContentByte.endMarkedContentSequence();
-				
 				if (isTagEmpty)
 				{
 					pdfStructure.beginTag(tagStack.peek(), "Span");
@@ -826,14 +810,12 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			prop = element.getPropertiesMap().getProperty(PdfConstants.PROPERTY_TAG_TR);
 			if (PdfConstants.TAG_END.equals(prop) || PdfConstants.TAG_FULL.equals(prop))
 			{
-				//pdfContentByte.endMarkedContentSequence();
 				tagStack.pop();
 			}
 
 			prop = element.getPropertiesMap().getProperty(PdfConstants.PROPERTY_TAG_TABLE);
 			if (PdfConstants.TAG_END.equals(prop) || PdfConstants.TAG_FULL.equals(prop))
 			{
-				//pdfContentByte.endMarkedContentSequence();
 				tagStack.pop();
 			}
 		}
@@ -866,8 +848,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			|| PdfConstants.TAG_END.equals(pdfTagPropValue) || PdfConstants.TAG_FULL.equals(pdfTagPropValue)
 			)
 		{
-			//pdfContentByte.endMarkedContentSequence(); 
-
 			if (isTagEmpty)
 			{
 				pdfStructure.beginTag(tagStack.peek(), "Span");
@@ -883,8 +863,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 		String prop = element.getPropertiesMap().getProperty(pdfTagProp);
 		if (PdfConstants.TAG_END.equals(prop) || PdfConstants.TAG_FULL.equals(prop))
 		{
-			//pdfContentByte.endMarkedContentSequence();
-			
 			if (isTagEmpty)
 			{
 				pdfStructure.beginTag(tagStack.peek(), "Span");
