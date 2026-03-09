@@ -53,9 +53,7 @@ public class FillPart
 	
 	private JRPropertiesHolder staticPartProperties;
 	private List<JRPropertyExpression> propertyExpressions;
-	private JRPropertiesHolder printPartProperties;
 	private PartFillComponent fillComponent;
-	private String partName;
 
 	public FillPart(JRPart part, JRFillObjectFactory fillFactory)
 	{
@@ -84,18 +82,30 @@ public class FillPart
 		fillComponent.initialize(new Context());
 	}
 	
-	public void fill(byte evaluation, PartPrintOutput output) throws JRException
+	public JRPart getPart()
+	{
+		return reportPart;
+	}
+	
+	public EvaluatedPart evaluate(byte evaluation) throws JRException
 	{
 		boolean toPrint = evaluatePrintWhenExpression(evaluation);
 		if (!toPrint)
 		{
-			return;
+			return EvaluatedPart.NO_PRINT;
 		}
 		
-		evaluateProperties(evaluation);
-		evaluatePartNameExpression(evaluation);
-		fillComponent.evaluate(evaluation);
-		fillComponent.fill(output);
+		JRPropertiesHolder partProperties = evaluateProperties(evaluation);
+		String partName = evaluatePartNameExpression(evaluation);
+		
+		Object evaluatedComponent = fillComponent.evaluate(evaluation);
+		
+		return new EvaluatedPart(partName, partProperties, evaluatedComponent);
+	}
+	
+	public void fill(EvaluatedPart evaluatedPart, PartPrintOutput output) throws JRException
+	{
+		fillComponent.fill(evaluatedPart, output);
 	}
 
 	protected boolean evaluatePrintWhenExpression(byte evaluation) throws JRException
@@ -114,7 +124,7 @@ public class FillPart
 		return result;
 	}
 	
-	protected void evaluateProperties(byte evaluation) throws JRException
+	protected JRPropertiesHolder evaluateProperties(byte evaluation) throws JRException
 	{
 		JRPropertiesMap dynamicProperties = new JRPropertiesMap();
 		for (JRPropertyExpression prop : propertyExpressions)
@@ -123,6 +133,7 @@ public class FillPart
 			dynamicProperties.setProperty(prop.getName(), value);
 		}
 		
+		JRPropertiesHolder printPartProperties;
 		if (dynamicProperties.isEmpty())
 		{
 			printPartProperties = staticPartProperties;
@@ -135,28 +146,19 @@ public class FillPart
 			JRPropertiesUtil.getInstance(reportFiller.getJasperReportsContext()).transferProperties(
 					dynamicProperties, printPartProperties, PrintPart.PROPERTIES_TRANSFER_PREFIX);
 		}
+		return printPartProperties;
 	}
 
-	protected void evaluatePartNameExpression(byte evaluation) throws JRException
+	protected String evaluatePartNameExpression(byte evaluation) throws JRException
 	{
 		JRExpression expression = reportPart.getPartNameExpression();
-		partName = expression == null ? null : (String) expressionEvaluator.evaluate(expression, evaluation);
+		return expression == null ? null : (String) expressionEvaluator.evaluate(expression, evaluation);
 	}
 
 	public PartEvaluationTime getEvaluationTime()
 	{
 		PartEvaluationTime evaluationTime = reportPart.getEvaluationTime();
 		return evaluationTime == null || evaluationTime.getEvaluationTimeType() == null ? StandardPartEvaluationTime.EVALUATION_NOW : evaluationTime;
-	}
-
-	public String getPartName()
-	{
-		return partName;
-	}
-	
-	public JRPropertiesHolder getPrintPartProperties()
-	{
-		return printPartProperties;
 	}
 
 	protected class Context implements PartFillContext

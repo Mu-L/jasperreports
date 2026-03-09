@@ -177,13 +177,8 @@ public class FillTable extends SubreportFillComponent
 	protected void setTableInstanceCounter()
 	{
 		JRFillContext fillerContext = fillContext.getFiller().getFillContext();
-		AtomicInteger counter = (AtomicInteger) fillerContext.getFillCache(FILL_CACHE_KEY_TABLE_INSTANCE_COUNTER);
-		if (counter == null)
-		{
-			// we just need a mutable integer, there's no actual concurrency here
-			counter = new AtomicInteger();
-			fillerContext.setFillCache(FILL_CACHE_KEY_TABLE_INSTANCE_COUNTER, counter);
-		}
+		AtomicInteger counter = fillerContext.getFillCache(FILL_CACHE_KEY_TABLE_INSTANCE_COUNTER,
+				AtomicInteger::new);
 		
 		int instanceIndex = counter.getAndIncrement();
 		if (log.isDebugEnabled())
@@ -296,7 +291,10 @@ public class FillTable extends SubreportFillComponent
 						if (fillSubColumn != null)
 						{
 							printWidth += fillSubColumn.getWidth();
-							printWeight += fillSubColumn.getWeight();
+							printWeight += 
+								fillSubColumn.getWeight() >= 0
+								? fillSubColumn.getWeight()
+								: - fillSubColumn.getWeight() * fillSubColumn.getWidth(); // negative weight represents a multiplier of column width
 							subColumns.add(fillSubColumn);
 						}
 					}
@@ -340,7 +338,10 @@ public class FillTable extends SubreportFillComponent
 			{
 				fillColumns.add(fillColumn);
 				fillWidth += fillColumn.getWidth();
-				fillWeight += fillColumn.getWeight();
+				fillWeight += 
+					fillColumn.getWeight() >= 0 
+					? fillColumn.getWeight() 
+					: - fillColumn.getWeight() * fillColumn.getWidth(); // negative weight represents a multiplier of column width
 			}
 		}
 	}
@@ -361,9 +362,14 @@ public class FillTable extends SubreportFillComponent
 			{
 				int colWidthBeforeWeigthResize = fillColumn.getWidth();
 				
-				if (fillColumn.getWeight() > 0)
+				int columnWeight = 
+					fillColumn.getWeight() >= 0
+					? fillColumn.getWeight()
+					: - fillColumn.getWeight() * colWidthBeforeWeigthResize;  // negative weight represents a multiplier of column width
+				
+				if (columnWeight > 0)
 				{
-					float floatWidth = (float)deltaWidth * fillColumn.getWeight() / totalWeight;
+					float floatWidth = (float)deltaWidth * columnWeight / totalWeight;
 					floatWidthSum += floatWidth;
 					int intWidth = Math.round(floatWidthSum) - intWidthSum;
 					intWidthSum += intWidth;

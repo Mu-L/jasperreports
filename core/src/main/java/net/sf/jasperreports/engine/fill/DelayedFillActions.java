@@ -87,14 +87,7 @@ public class DelayedFillActions implements VirtualizationListener<VirtualElement
 	
 	private static int assignId(BaseReportFiller reportFiller)
 	{
-		AtomicInteger counter = (AtomicInteger) reportFiller.fillContext.getFillCache(FILL_CACHE_KEY_ID);
-		if (counter == null)
-		{
-			// we just need a mutable integer, there's no actual concurrency here
-			counter = new AtomicInteger();
-			reportFiller.fillContext.setFillCache(FILL_CACHE_KEY_ID, counter);
-		}
-		
+		AtomicInteger counter = reportFiller.fillContext.getFillCache(FILL_CACHE_KEY_ID, AtomicInteger::new);
 		return counter.incrementAndGet();
 	}
 

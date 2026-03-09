@@ -420,7 +420,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 							report = loadReportSource(reportLocation, contextLocation, filler);
 							if (isUsingCache)
 							{
-								filler.fillContext.registerLoadedSubreport(absolutePathKey, report);
+								report = filler.fillContext.registerLoadedSubreport(absolutePathKey, report);
 							}
 						}
 					}					
@@ -432,7 +432,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 				
 				if (isUsingCache)
 				{
-					filler.fillContext.registerLoadedSubreport(cacheKey, report);
+					report = filler.fillContext.registerLoadedSubreport(cacheKey, report);
 				}
 			}
 		}

@@ -23,8 +23,11 @@
  */
 package net.sf.jasperreports.engine.fill;
 
+import java.util.Map;
+
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
+import net.sf.jasperreports.engine.JasperReport;
 
 
 /**
@@ -42,5 +45,8 @@ public interface FillerParent
 	DatasetExpressionEvaluator getCachedEvaluator();
 
 	void updateBookmark(JRPrintElement element);
+
+	JRVirtualizationContext getChildVirtualizationContext(JasperReport jasperReport, 
+			Map<String, Object> parameterValues);
 
 }
