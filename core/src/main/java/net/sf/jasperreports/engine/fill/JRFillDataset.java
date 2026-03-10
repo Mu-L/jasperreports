@@ -654,6 +654,11 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	 */
 	public void setParameterValues(Map<String,Object> parameterValues) throws JRException
 	{
+		setParameterValues(parameterValues, true);
+	}
+	
+	public void setParameterValues(Map<String,Object> parameterValues, boolean prepareData) throws JRException
+	{
 		parameterValues.put(JRParameter.REPORT_PARAMETERS_MAP, parameterValues);
 		
 		parameterValues.put(JRParameter.JASPER_REPORTS_CONTEXT, getJasperReportsContext());
@@ -706,8 +711,8 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 		mergedProperties = staticProperties;
 		evaluateProperties(PropertyEvaluationTimeEnum.EARLY);
 		
-		//FIXME do not call on default parameter value evaluation and when a data snapshot is used?
-		contributeParameters(parameterValues);
+		//FIXME do not call when a data snapshot is used?
+		contributeParameters(parameterValues, prepareData);
 		
 		setFillParameterValuesFromMap(parameterValues, false);
 		evaluateParameterValues(ParameterEvaluationTimeEnum.LATE, parameterValues);
@@ -1198,7 +1203,14 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	 */
 	public void contributeParameters(Map<String,Object> parameterValues) throws JRException
 	{
-		parameterContributors = getParameterContributors(new ParameterContributorContext(getRepositoryContext(), this, parameterValues));
+		contributeParameters(parameterValues, true);
+	}
+	
+	public void contributeParameters(Map<String,Object> parameterValues, boolean prepareData) throws JRException
+	{
+		ParameterContributorContext contributorContext = new ParameterContributorContext(
+				getRepositoryContext(), this, parameterValues, prepareData);
+		parameterContributors = getParameterContributors(contributorContext);
 		if (parameterContributors != null)
 		{
 			for(ParameterContributor contributor : parameterContributors)

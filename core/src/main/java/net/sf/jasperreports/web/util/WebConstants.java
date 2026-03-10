@@ -44,9 +44,9 @@ public interface WebConstants
 	public static final String REQUEST_PARAMETER_RUN_REPORT = "jr_run";
 	
 	/**
-	 * 
+	 * @deprecated Replaced by {@link StandardWebResourceFilter#PROPERTY_PREFIX_RESOURCE_PATTERN}.
 	 */
-	public static final String PROPERTIES_WEB_RESOURCE_PATTERN_PREFIX = "net.sf.jasperreports.web.resource.pattern.";
+	public static final String PROPERTIES_WEB_RESOURCE_PATTERN_PREFIX = StandardWebResourceFilter.PROPERTY_PREFIX_RESOURCE_PATTERN;
 
 	/**
 	 * Boolean property to control the setting of the response header Access-Control-Allow-Origin to *

@@ -359,6 +359,24 @@ Property that specifies the list of token separators characters for <api href="n
     </description>
   </configProperty>
 
+  <!-- net.sf.jasperreports.sql.clause.notin.novalues.result -->
+
+  <configProperty name="net.sf.jasperreports.sql.clause.notin.novalues.result">
+    <description>
+Property that specifies the boolean result of the NOT IN clause of an SQL query when the list of values is null or empty and 
+the optional third parameter of the clause is not provided.
+    </description>
+  </configProperty>
+
+  <!-- net.sf.jasperreports.sql.clause.in.novalues.result -->
+
+  <configProperty name="net.sf.jasperreports.sql.clause.in.novalues.result">
+    <description>
+Property that specifies the boolean result of the IN clause of an SQL query when the list of values is null or empty and 
+the optional third parameter of the clause is not provided.
+    </description>
+  </configProperty>
+
 
   <!-- net.sf.jasperreports.query.executer.factory.{language} -->
 
@@ -5917,6 +5935,48 @@ When not set, there is no limit.
   </configProperty>
   
   
+  <!-- 	net.sf.jasperreports.web.resource.filter.enabled -->
+
+  <configProperty name="net.sf.jasperreports.web.resource.filter.enabled">
+    <description>
+Flag to enable filtering of Web resources that can be delivered from the repository.
+<br/>
+The list of allowed Web resources is configured via
+<a href="#net.sf.jasperreports.web.resource.paths.{arbitrary_name}">net.sf.jasperreports.web.resource.paths.{arbitrary_name}</a> and
+<a href="#net.sf.jasperreports.web.resource.pattern.{arbitrary_name}">net.sf.jasperreports.web.resource.pattern.{arbitrary_name}</a> 
+properties.
+    </description>
+  </configProperty>
+
+
+  <!-- 	net.sf.jasperreports.web.resource.paths.{arbitrary_name} -->
+
+  <configProperty name="net.sf.jasperreports.web.resource.paths.{arbitrary_name}">
+    <description>
+Defines a list of Web resources that are allowed to be delivered from the repository by the parent Web application.
+<br/>
+The property value should be a comma separated list of resource paths. Wildcards are not supported.
+<br/>
+The <a href="#net.sf.jasperreports.web.resource.filter.enabled">net.sf.jasperreports.web.resource.filter.enabled</a>
+flag needs to be set in order for the filter to apply.
+    </description>
+  </configProperty>
+  
+  
+  <!-- 	net.sf.jasperreports.web.resource.pattern.{arbitrary_name} -->
+  
+  <configProperty name="net.sf.jasperreports.web.resource.pattern.{arbitrary_name}">
+    <description>
+Defines a list of Web resources that are allowed to be delivered from the repository by the parent Web application.
+<br/>
+The property value should be a Java regular expression pattern for matching resource paths.
+<br/>
+The <a href="#net.sf.jasperreports.web.resource.filter.enabled">net.sf.jasperreports.web.resource.filter.enabled</a>
+flag needs to be set in order for the filter to apply.
+    </description>
+  </configProperty>
+  
+  
   <!-- 	net.sf.jasperreports.legacy.compiler.source.included.parameters -->
 
   <configProperty name="net.sf.jasperreports.legacy.compiler.source.included.parameters">
@@ -6034,18 +6094,6 @@ It only applies to text elements with numeric values.
   </configProperty>
   
   
-  <!-- net.sf.jasperreports.export.pdf.use.saved.line.breaks -->
-
-  <configProperty name="net.sf.jasperreports.export.pdf.use.saved.line.breaks">
-    <description>
-Property that determines whether the PDF exporter should make use of the text line break positions saved during the report fill.
-The property is only effective when the <code>net.sf.jasperreports.text.save.line.breaks</code> flag is set.
-<br/>
-The property assumes that the same font is used during report fill and for PDF exporting, therefore using font extensions for texts is recommended.
-    </description>
-  </configProperty>
-  
-  
   <!-- net.sf.jasperreports.sorting.use.collator -->
 
   <configProperty name="net.sf.jasperreports.sorting.use.collator">
@@ -6054,6 +6102,16 @@ Property that determines whether a <code>java.text.Collator</code> is used to so
 <br/>
 The property is set to <code>true</code> by default.  When set to <code>false</code>, <code>java.lang.String</code> values
 are sorted according to the Unicode lexicographic order.
+    </description>
+  </configProperty>
+  
+  
+  <!-- net.sf.jasperreports.parameter.defaults.evaluator.prepares.data -->
+
+  <configProperty name="net.sf.jasperreports.parameter.defaults.evaluator.prepares.data">
+    <description>
+Property that determines whether evaluating parameter default values via <code>net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator</code>
+should prepare the data source for the report (for instance by loading and executing the report data adapter).
     </description>
   </configProperty>
 

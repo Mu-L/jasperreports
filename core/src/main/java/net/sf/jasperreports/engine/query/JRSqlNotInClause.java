@@ -37,11 +37,10 @@ import net.sf.jasperreports.properties.PropertyConstants;
 public class JRSqlNotInClause extends JRSqlAbstractInClause
 {
 	/**
-	 * Property that specifies the boolean result of the IN clause of an SQL query when the list of values is null or empty 
+	 * Property that specifies the boolean result of the NOT IN clause of an SQL query when the list of values is null or empty 
 	 * and the optional third parameter of the clause is not provided.
 	 */
 	@Property(
-			name = "net.sf.jasperreports.sql.clause.notin.novalues.result",
 			defaultValue = PropertyConstants.BOOLEAN_TRUE,
 			category = PropertyConstants.CATEGORY_DATA_SOURCE,
 			scopes = {PropertyScope.CONTEXT, PropertyScope.REPORT},
