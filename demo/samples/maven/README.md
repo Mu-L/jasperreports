@@ -199,10 +199,6 @@ Here is an example of how to configure the `update` Maven plugin goal:
 ## JasperReports Maven Plugin <a name='usage'>Usage</a>
 <div align="right">Documented by <a href='mailto:teodord@users.sourceforge.net'>Teodor Danciu</a></div>
 
-**Description / Goal**
-
-How to update all your JRXML report source files using the JasperReports Maven Plugin, in order to perform the same modification on them or to bring them up-to-date with respect to the JasperReports Schema Reference.
-
 **Since:** 7.0.6
 
 
