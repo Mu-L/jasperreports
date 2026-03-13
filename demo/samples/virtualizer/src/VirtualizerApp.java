@@ -59,7 +59,6 @@ public class VirtualizerApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		export();
 	}
 	

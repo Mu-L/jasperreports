@@ -58,7 +58,6 @@ public class XlsFormulaApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		fill();
 		xls();
 		ods();

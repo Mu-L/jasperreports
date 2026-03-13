@@ -54,6 +54,7 @@
 		<module>landscape</module>
 		<module>list</module>
 		<module>markup</module>
+		<module>maven</module>
 		<module>mondrian</module>
 		<module>nopagebreak</module>
 		<module>noreport</module>
@@ -88,9 +89,23 @@
 	<properties>
 		<jasperreports.root.dir>${basedir}/../../</jasperreports.root.dir>
 		<maven.buildNumber.doCheck>false</maven.buildNumber.doCheck>
+		<maven.deploy.skip>true</maven.deploy.skip>
+		<maven.install.skip>true</maven.install.skip>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
+		<maven.resources.skip>true</maven.resources.skip>
+		<maven.source.skip>true</maven.source.skip>
+		<maven.test.skip>true</maven.test.skip>
 	</properties>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>net.sf.jasperreports</groupId>
+				<artifactId>jasperreports-maven-plugin</artifactId>
+				<version>${revision}</version>
+				<configuration>
+				    <skip>true</skip>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
@@ -99,6 +114,7 @@
 					<!-- 
 					This execution is placed here so that when exec:exec@all is called to run all the sample modules,
 					the current parent project does not actually do anything, and does not crash either.
+					Property exec.skip does not seem to work, if the plugin does not have at least an execution configured.
 					 -->
 					<execution>
 						<id>all</id>

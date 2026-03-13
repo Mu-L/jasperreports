@@ -12,6 +12,8 @@
 	<properties>
 		<jasperreports.root.dir>${basedir}/../../../</jasperreports.root.dir>
 		<maven.buildNumber.doCheck>false</maven.buildNumber.doCheck>
+		<maven.deploy.skip>true</maven.deploy.skip>
+		<maven.install.skip>true</maven.install.skip>
 		<sample.app.name>${sample.base.name}App</sample.app.name>
 		<sample.report.name>${sample.base.name}Report</sample.report.name>
 	</properties>
@@ -140,6 +142,32 @@
 					<fork>true</fork><!-- TODO lucianc is this ok? -->
 					<compilerArgument>-Xlint:deprecation,-unchecked,-options</compilerArgument>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>net.sf.jasperreports</groupId>
+				<artifactId>jasperreports-maven-plugin</artifactId>
+				<version>${revision}</version>
+				<executions>
+					<execution>
+						<id>compile-reports</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<sourceDirectory>${project.basedir}/reports</sourceDirectory>
+							<outputDirectory>${project.build.directory}/reports</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<!-- this is for decompile, as update goal is not expected to be called on all samples -->
+						<id>default-cli</id>
+						<configuration>
+							<sourceDirectory>${project.build.directory}/reports</sourceDirectory>
+							<outputDirectory>${project.build.directory}/reports</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

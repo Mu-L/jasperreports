@@ -63,6 +63,7 @@ import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.part.PartComponent;
 import net.sf.jasperreports.engine.part.PartComponentsBundle;
 import net.sf.jasperreports.engine.part.PartComponentsEnvironment;
+import net.sf.jasperreports.engine.util.JRClassLoader;
 import net.sf.jasperreports.engine.util.JRValueStringUtils;
 import net.sf.jasperreports.engine.xml.ReportWriterConfiguration;
 
@@ -153,6 +154,8 @@ public class JacksonUtil
 	
 	public XmlMapper getXmlMapper()
 	{
+		//FIXME if the JasperReportsContext instance is shared but the thread classloader changes, 
+		// the cached object does not have extensions from the current classloader
 		XmlMapper mapper = (XmlMapper)jasperReportsContext.getOwnValue(XML_MAPPER_CONTEXT_KEY);
 		if (mapper == null)
 		{
@@ -219,7 +222,7 @@ public class JacksonUtil
 	{
 		try
 		{
-			Class<?> clazz = Class.forName(mapping.getClassName());
+			Class<?> clazz = JRClassLoader.loadClassForRealName(mapping.getClassName());
 			// in theory, we could register subtypes without specifying a name here, just the class,
 			// using properties without suffix in the extension config file.
 			// in such case, the name would be provided by the @JsonTypeName annotation in the registered class.

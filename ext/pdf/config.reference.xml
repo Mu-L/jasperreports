@@ -688,6 +688,15 @@ Its value is used as default for the
   </configProperty>
   
   
+  <!-- net.sf.jasperreports.export.pdf.tag.attribute.ActualText -->
+  
+  <configProperty name="net.sf.jasperreports.export.pdf.tag.attribute.ActualText">
+    <description>
+Property that specifies the actual text that the screen reader should read for the current element.
+    </description>
+  </configProperty>
+  
+  
   <!-- net.sf.jasperreports.export.pdf.tagged -->
   
   <configProperty name="net.sf.jasperreports.export.pdf.tagged">
@@ -762,6 +771,18 @@ Property whose value is used as default for the
     <description>
 Property whose value is used as default for the <api href="net/sf/jasperreports/pdf/PdfExporterConfiguration.html#getIccProfilePath()">getIccProfilePath()</api> 
 export configuration setting. It specifies the path to the ICC profile file for the PDF/A compliant documents.
+    </description>
+  </configProperty>
+  
+  
+  <!-- net.sf.jasperreports.export.pdf.use.saved.line.breaks -->
+
+  <configProperty name="net.sf.jasperreports.export.pdf.use.saved.line.breaks">
+    <description>
+Property that determines whether the PDF exporter should make use of the text line break positions saved during the report fill.
+The property is only effective when the <code>net.sf.jasperreports.text.save.line.breaks</code> flag is set.
+<br/>
+The property assumes that the same font is used during report fill and for PDF exporting, therefore using font extensions for texts is recommended.
     </description>
   </configProperty>
   
