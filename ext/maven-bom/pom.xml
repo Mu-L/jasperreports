@@ -18,6 +18,7 @@
 		<url>${scmUrl}</url>
 	</scm>
 	<properties>
+		<jasperreports.root.dir>${basedir}/../../</jasperreports.root.dir>
 		<maven.deploy.skip>false</maven.deploy.skip>
 		<maven.install.skip>false</maven.install.skip>
 	</properties>
