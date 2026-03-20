@@ -291,6 +291,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 
 	protected PdfStructureEntry allTag;
 	protected Stack<PdfStructureEntry> tagStack;
+	protected Stack<AccessibilityTagEnum> headerStack;
 	protected boolean isTagEmpty = true;
 	protected int crtCrosstabRowY = -1;
 	protected boolean insideCrosstabCellFrame;
@@ -348,6 +349,8 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			
 			tagStack = new Stack<>();
 			tagStack.push(allTag);
+			
+			headerStack = new Stack<>();
 		}
 	}
 	
@@ -503,7 +506,18 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	{
 		if (isTagged)
 		{
-			PdfStructureEntry imageTag = pdfStructure.beginTag(tagStack.peek(), "Image");
+			PdfStructureEntry parent = null;
+			
+			if (headerStack.size() > 0)
+			{
+				parent = pdfStructure.createTag(tagStack.peek(), headerStack.peek().name());
+			}
+			else
+			{
+				parent = tagStack.peek();
+			}
+			
+			PdfStructureEntry imageTag = pdfStructure.beginTag(parent, "Image");
 			if (printImage.getHyperlinkTooltip() != null)
 			{
 				imageTag.putString("Alt", printImage.getHyperlinkTooltip());
@@ -536,10 +550,21 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 				actualText = textElement.getPropertiesMap().getProperty(PROPERTY_TAG_ATTRIBUTE_ACTUAL_TEXT);
             }
 			
+			PdfStructureEntry parent = null;
+			
+			if (headerStack.size() > 0)
+			{
+				parent = pdfStructure.createTag(tagStack.peek(), headerStack.peek().name());
+			}
+			else
+			{
+				parent = tagStack.peek();
+			}
+			
 			PdfStructureEntry textEntry =
 				actualText == null
-				? pdfStructure.beginTag(tagStack.peek(), textElement.getLinkType() == null ? "Text" : "Link")
-				: pdfStructure.beginTag(tagStack.peek(), textElement.getLinkType() == null ? "Text" : "Link", actualText);
+				? pdfStructure.beginTag(parent, textElement.getLinkType() == null ? (headerStack.size() > 0 ? null : "Text") : "Link")
+				: pdfStructure.beginTag(parent, textElement.getLinkType() == null ? (headerStack.size() > 0 ? null : "Text") : "Link", actualText);
 
 			if (textElement.hasProperties())
             {
@@ -657,9 +682,10 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			|| PdfConstants.TAG_START.equals(pdfTagPropValue) || PdfConstants.TAG_FULL.equals(pdfTagPropValue)
 			)
 		{
-			PdfStructureEntry headingTag = pdfStructure.createTag(tagStack.peek(), accessibilityTag.name());
-			headingTag.putArray("K");
-			tagStack.push(headingTag);
+//			PdfStructureEntry headingTag = pdfStructure.createTag(tagStack.peek(), accessibilityTag.name());
+//			headingTag.putArray("K");
+//			tagStack.push(headingTag);
+			headerStack.push(accessibilityTag);
 			isTagEmpty = true;
 		}
 	}
@@ -850,11 +876,12 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 		{
 			if (isTagEmpty)
 			{
-				pdfStructure.beginTag(tagStack.peek(), "Span");
+				pdfStructure.beginTag(tagStack.peek(), "Span");//FIXMENOW still needed?
 				pdfStructure.endTag();
 			}
 
-			tagStack.pop();
+//			tagStack.pop();
+			headerStack.pop();
 		}
 	}
 	
