@@ -2,7 +2,7 @@
 JasperReports Library Change Log
 =============================================
 
-JasperReports 7.0.6 (2026-0x-xx)
+JasperReports 7.0.6 (2026-03-13)
 ---------------------------------------------
 
 - introducing an official JasperReports Maven Plugin for compiling, decompiling and updating
@@ -21,7 +21,7 @@ and Apache Log4J 2.25.3;
 
 
 
-JasperReports 7.0.5 (2025-1x-xx)
+JasperReports 7.0.5 (2026-02-27)
 ---------------------------------------------
 
 - support for proportional table column resize using negative weight values convention;

@@ -17,6 +17,9 @@
 		<tag>${revision}</tag>
 		<url>${scmUrl}</url>
 	</scm>
+	<properties>
+		<jasperreports.root.dir>${basedir}/../../</jasperreports.root.dir>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
