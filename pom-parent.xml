@@ -172,14 +172,14 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>flatten</id>
+						<id>default-flatten</id>
 						<phase>process-resources</phase>
 						<goals>
 							<goal>flatten</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>flatten.clean</id>
+						<id>default-clean</id>
 						<phase>clean</phase>
 						<goals>
 							<goal>clean</goal>
@@ -205,7 +205,6 @@
 				<version>${maven-resources-plugin.version}</version>
 				<executions>
 					<execution>
-						<id>copy-license</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>copy-resources</goal>
