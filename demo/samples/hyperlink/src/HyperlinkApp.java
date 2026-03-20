@@ -66,7 +66,6 @@ public class HyperlinkApp extends AbstractSampleApp
 	@Override
 	public void test() throws JRException
 	{
-		compile();
 		writeXml();
 		fill();
 		pdf();
