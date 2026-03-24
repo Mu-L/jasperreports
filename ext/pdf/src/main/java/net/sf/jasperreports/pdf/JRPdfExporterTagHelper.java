@@ -291,6 +291,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 
 	protected PdfStructureEntry allTag;
 	protected Stack<PdfStructureEntry> tagStack;
+	protected Stack<AccessibilityTagEnum> headerStack;
 	protected boolean isTagEmpty = true;
 	protected int crtCrosstabRowY = -1;
 	protected boolean insideCrosstabCellFrame;
@@ -348,6 +349,8 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			
 			tagStack = new Stack<>();
 			tagStack.push(allTag);
+			
+			headerStack = new Stack<>();
 		}
 	}
 	
@@ -382,11 +385,9 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			if (crtCrosstabRowY >= 0) //crosstab still open
 			{
 				//end the current row
-				//pdfContentByte.endMarkedContentSequence();
 				tagStack.pop();
 				
 				//end the table
-				//pdfContentByte.endMarkedContentSequence();
 				tagStack.pop();
 			}
 		}
@@ -419,7 +420,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 						//this is the first cell on a new row
 
 						//end the current row
-						//pdfContentByte.endMarkedContentSequence();
 						tagStack.pop();
 						
 						if (
@@ -429,7 +429,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 							)
 						{
 							//end the table
-							//pdfContentByte.endMarkedContentSequence();
 							tagStack.pop();
 
 							//start table
@@ -464,11 +463,9 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 						//normal element outside crosstab
 						
 						//end the current row
-						//pdfContentByte.endMarkedContentSequence();
 						tagStack.pop();
 						
 						//end the table
-						//pdfContentByte.endMarkedContentSequence();
 						tagStack.pop();
 						
 						//end crosstab
@@ -509,7 +506,18 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	{
 		if (isTagged)
 		{
-			PdfStructureEntry imageTag = pdfStructure.beginTag(tagStack.peek(), "Image");
+			PdfStructureEntry parent = null;
+			
+			if (headerStack.size() > 0)
+			{
+				parent = pdfStructure.createTag(tagStack.peek(), headerStack.peek().name());
+			}
+			else
+			{
+				parent = tagStack.peek();
+			}
+			
+			PdfStructureEntry imageTag = pdfStructure.beginTag(parent, "Image");
 			if (printImage.getHyperlinkTooltip() != null)
 			{
 				imageTag.putString("Alt", printImage.getHyperlinkTooltip());
@@ -542,10 +550,21 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 				actualText = textElement.getPropertiesMap().getProperty(PROPERTY_TAG_ATTRIBUTE_ACTUAL_TEXT);
             }
 			
+			PdfStructureEntry parent = null;
+			
+			if (headerStack.size() > 0)
+			{
+				parent = pdfStructure.createTag(tagStack.peek(), headerStack.peek().name());
+			}
+			else
+			{
+				parent = tagStack.peek();
+			}
+			
 			PdfStructureEntry textEntry =
 				actualText == null
-				? pdfStructure.beginTag(tagStack.peek(), textElement.getLinkType() == null ? "Text" : "Link")
-				: pdfStructure.beginTag(tagStack.peek(), textElement.getLinkType() == null ? "Text" : "Link", actualText);
+				? pdfStructure.beginTag(parent, textElement.getLinkType() == null ? (headerStack.size() > 0 ? null : "Text") : "Link")
+				: pdfStructure.beginTag(parent, textElement.getLinkType() == null ? (headerStack.size() > 0 ? null : "Text") : "Link", actualText);
 
 			if (textElement.hasProperties())
             {
@@ -663,10 +682,10 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			|| PdfConstants.TAG_START.equals(pdfTagPropValue) || PdfConstants.TAG_FULL.equals(pdfTagPropValue)
 			)
 		{
-			PdfStructureEntry headingTag = pdfStructure.createTag(tagStack.peek(), accessibilityTag.name());
-			//pdfContentByte.beginMarkedContentSequence(headingTag);
-			headingTag.putArray("K");
-			tagStack.push(headingTag);
+//			PdfStructureEntry headingTag = pdfStructure.createTag(tagStack.peek(), accessibilityTag.name());
+//			headingTag.putArray("K");
+//			tagStack.push(headingTag);
+			headerStack.push(accessibilityTag);
 			isTagEmpty = true;
 		}
 	}
@@ -675,7 +694,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createTableStartTag()
 	{
 		PdfStructureEntry tableTag = pdfStructure.createTag(allTag, "Table");
-		//pdfContentByte.beginMarkedContentSequence(tableTag);
 		tableTag.putArray("K");
 		tagStack.push(tableTag);
 	}
@@ -684,7 +702,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createTrStartTag()
 	{
 		PdfStructureEntry tableRowTag = pdfStructure.createTag(tagStack.peek(), "TR");
-		//pdfContentByte.beginMarkedContentSequence(tableRowTag);
 		tableRowTag.putArray("K");
 		tagStack.push(tableRowTag);
 	}
@@ -693,7 +710,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createThStartTag(JRPrintElement element)
 	{
 		PdfStructureEntry tableHeaderTag = pdfStructure.createTag(tagStack.peek(), "TH");
-		//pdfContentByte.beginMarkedContentSequence(tableHeaderTag);
 		tableHeaderTag.putArray("K");
 		tagStack.push(tableHeaderTag);
 		isTagEmpty = true;
@@ -705,7 +721,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createTdStartTag(JRPrintElement element)
 	{
 		PdfStructureEntry tableCellTag = pdfStructure.createTag(tagStack.peek(), "TD");
-		//pdfContentByte.beginMarkedContentSequence(tableCellTag);
 		tableCellTag.putArray("K");
 		tagStack.push(tableCellTag);
 		isTagEmpty = true;
@@ -760,7 +775,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createListStartTag()
 	{
 		PdfStructureEntry listTag = pdfStructure.createTag(tagStack.peek(), "L");
-		//pdfContentByte.beginMarkedContentSequence(tableTag);
 		listTag.putArray("K");
 		tagStack.push(listTag);
 	}
@@ -769,7 +783,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected void createStartTag(JRPrintElement element, String pdfTag)
 	{
 		PdfStructureEntry tag = pdfStructure.createTag(tagStack.peek(), pdfTag);
-		//pdfContentByte.beginMarkedContentSequence(tableHeaderTag);
 		tag.putArray("K");
 		tagStack.push(tag);
 		isTagEmpty = true;
@@ -797,7 +810,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			String prop = element.getPropertiesMap().getProperty(PROPERTY_TAG_L);
 			if (PdfConstants.TAG_END.equals(prop) || PdfConstants.TAG_FULL.equals(prop))
 			{
-				//pdfContentByte.endMarkedContentSequence();
 				tagStack.pop();
 			}
 
@@ -809,8 +821,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 					|| JRCellContents.TYPE_ROW_HEADER.equals(prop)
 					|| JRCellContents.TYPE_DATA.equals(prop)))
 			{
-				//pdfContentByte.endMarkedContentSequence();
-				
 				if (isTagEmpty)
 				{
 					pdfStructure.beginTag(tagStack.peek(), "Span");
@@ -826,14 +836,12 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			prop = element.getPropertiesMap().getProperty(PdfConstants.PROPERTY_TAG_TR);
 			if (PdfConstants.TAG_END.equals(prop) || PdfConstants.TAG_FULL.equals(prop))
 			{
-				//pdfContentByte.endMarkedContentSequence();
 				tagStack.pop();
 			}
 
 			prop = element.getPropertiesMap().getProperty(PdfConstants.PROPERTY_TAG_TABLE);
 			if (PdfConstants.TAG_END.equals(prop) || PdfConstants.TAG_FULL.equals(prop))
 			{
-				//pdfContentByte.endMarkedContentSequence();
 				tagStack.pop();
 			}
 		}
@@ -866,15 +874,14 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			|| PdfConstants.TAG_END.equals(pdfTagPropValue) || PdfConstants.TAG_FULL.equals(pdfTagPropValue)
 			)
 		{
-			//pdfContentByte.endMarkedContentSequence(); 
-
 			if (isTagEmpty)
 			{
-				pdfStructure.beginTag(tagStack.peek(), "Span");
+				pdfStructure.beginTag(tagStack.peek(), "Span");//FIXMENOW still needed?
 				pdfStructure.endTag();
 			}
 
-			tagStack.pop();
+//			tagStack.pop();
+			headerStack.pop();
 		}
 	}
 	
@@ -883,8 +890,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 		String prop = element.getPropertiesMap().getProperty(pdfTagProp);
 		if (PdfConstants.TAG_END.equals(prop) || PdfConstants.TAG_FULL.equals(prop))
 		{
-			//pdfContentByte.endMarkedContentSequence();
-			
 			if (isTagEmpty)
 			{
 				pdfStructure.beginTag(tagStack.peek(), "Span");
