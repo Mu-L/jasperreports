@@ -163,7 +163,8 @@ public class AccessibleApp extends AbstractSampleApp
 	{
 		long start = System.currentTimeMillis();
 
-		try{
+		try
+		{
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
 
 			JRPdfExporter exporter = new JRPdfExporter();
@@ -184,8 +185,7 @@ public class AccessibleApp extends AbstractSampleApp
 			
 			configuration.setPdfaConformance(PdfaConformanceEnum.PDFA_1A);
 			
-			// Uncomment the following line and specify a valid path for the ICC profile
-//			configuration.setIccProfilePath("path/to/ICC/profile");
+			configuration.setIccProfilePath("./sRGB_IEC61966-2-1_no_black_scaling.icc");
 			
 			exporter.setConfiguration(configuration);
 			exporter.exportReport();
@@ -193,7 +193,9 @@ public class AccessibleApp extends AbstractSampleApp
 			FileOutputStream fos = new FileOutputStream("target/reports/AccessibleReport_pdfa.pdf");
 			os.writeTo(fos);
 			fos.close();
-		}catch(Exception e){
+		}
+		catch(Exception e)
+		{
 			 e.printStackTrace();
 		}
 				

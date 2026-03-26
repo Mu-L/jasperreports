@@ -56,20 +56,17 @@ public class ClassicPdfStructure implements PdfStructure
 	}
 
 	@Override
-	public PdfStructureEntry createAllTag(String language)
+	public PdfStructureEntry createDocumentTag(String language)
 	{
 		PdfWriter pdfWriter = pdfProducer.getPdfWriter();
 		PdfStructureTreeRootUtil.install(pdfWriter);
 		PdfStructureTreeRoot root = pdfWriter.getStructureTreeRoot();
 		
-		PdfName pdfNameALL = new PdfName("All");
-		root.mapRole(pdfNameALL, PdfName.SECT);
 		root.mapRole(PdfName.TEXT, PdfName.P);
-		PdfStructureElement allTag = new PdfStructureElement(root, pdfNameALL);
+		PdfStructureElement documentTag = new PdfStructureElement(root, PdfName.DOCUMENT);
 		if(pdfWriter.getPDFXConformance() == PdfWriter.PDFA1A)
 		{
 			root.mapRole(new PdfName("Anchor"), PdfName.NONSTRUCT);
-			root.mapRole(PdfName.TEXT, PdfName.SPAN);
 		}
 		else
 		{
@@ -78,10 +75,10 @@ public class ClassicPdfStructure implements PdfStructure
 		
 		if (language != null)
 		{
-			allTag.put(PdfName.LANG, new PdfString(language));
+			documentTag.put(PdfName.LANG, new PdfString(language));
 		}
 		
-		return new ClassicStructureEntry(this, allTag);
+		return new ClassicStructureEntry(this, documentTag);
 	}
 	
 	protected PdfName pdfName(String name)

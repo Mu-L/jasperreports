@@ -30,7 +30,7 @@ package net.sf.jasperreports.pdf.common;
 public interface PdfStructure
 {
 	
-	PdfStructureEntry createAllTag(String language);
+	PdfStructureEntry createDocumentTag(String language);
 	
 	PdfStructureEntry createTag(PdfStructureEntry parent, String name);
 	

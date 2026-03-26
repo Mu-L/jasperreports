@@ -289,7 +289,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected PdfProducer pdfProducer;
 	protected PdfStructure pdfStructure;
 
-	protected PdfStructureEntry allTag;
+	protected PdfStructureEntry documentTag;
 	protected Stack<PdfStructureEntry> tagStack;
 	protected Stack<AccessibilityTagEnum> headerStack;
 	protected PdfStructureEntry currentLinkTag;
@@ -346,10 +346,10 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	{
 		if (isTagged)
 		{
-			allTag = pdfStructure.createAllTag(language);
+			documentTag = pdfStructure.createDocumentTag(language);
 			
 			tagStack = new Stack<>();
-			tagStack.push(allTag);
+			tagStack.push(documentTag);
 			
 			headerStack = new Stack<>();
 		}
@@ -359,7 +359,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	{
 		if (isTagged)
 		{
-			pdfStructure.beginTag(allTag, "Anchor");
+			pdfStructure.beginTag(documentTag, "Anchor");
 		}
 	}
 	
@@ -716,7 +716,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 
 	protected void createTableStartTag()
 	{
-		PdfStructureEntry tableTag = pdfStructure.createTag(allTag, "Table");
+		PdfStructureEntry tableTag = pdfStructure.createTag(documentTag, "Table");
 		tableTag.putArray("K");
 		tagStack.push(tableTag);
 	}
