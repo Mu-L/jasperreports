@@ -32,6 +32,7 @@ import com.lowagie.text.pdf.PdfObject;
 import com.lowagie.text.pdf.PdfString;
 import com.lowagie.text.pdf.PdfStructureElement;
 import com.lowagie.text.pdf.PdfStructureTreeRoot;
+import com.lowagie.text.pdf.PdfStructureTreeRootUtil;
 import com.lowagie.text.pdf.PdfWriter;
 
 import net.sf.jasperreports.pdf.common.PdfStructure;
@@ -58,11 +59,11 @@ public class ClassicPdfStructure implements PdfStructure
 	public PdfStructureEntry createAllTag(String language)
 	{
 		PdfWriter pdfWriter = pdfProducer.getPdfWriter();
+		PdfStructureTreeRootUtil.install(pdfWriter);
 		PdfStructureTreeRoot root = pdfWriter.getStructureTreeRoot();
 		
 		PdfName pdfNameALL = new PdfName("All");
 		root.mapRole(pdfNameALL, PdfName.SECT);
-		root.mapRole(PdfName.IMAGE, PdfName.FIGURE);
 		root.mapRole(PdfName.TEXT, PdfName.P);
 		PdfStructureElement allTag = new PdfStructureElement(root, pdfNameALL);
 		if(pdfWriter.getPDFXConformance() == PdfWriter.PDFA1A)
