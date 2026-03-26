@@ -135,6 +135,7 @@ import net.sf.jasperreports.pdf.common.PdfProducer;
 import net.sf.jasperreports.pdf.common.PdfProducerContext;
 import net.sf.jasperreports.pdf.common.PdfProducerFactory;
 import net.sf.jasperreports.pdf.common.PdfRadioCheck;
+import net.sf.jasperreports.pdf.common.PdfStructureEntry;
 import net.sf.jasperreports.pdf.common.PdfTextAlignment;
 import net.sf.jasperreports.pdf.common.PdfTextChunk;
 import net.sf.jasperreports.pdf.common.PdfTextField;
@@ -1646,17 +1647,25 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 			{
 				setAnchor(imageProcessorResult.chunk, printImage, printImage);
 
-				PdfImage pxImage = getPxImage();
-				pxImage.scaleAbsolute(printImage.getWidth(), printImage.getHeight());
-				PdfChunk pxChunk = pdfProducer.createChunk(pxImage);
-
-				boolean wasHyperlinkSet = setHyperlinkInfo(pxChunk, printImage);
-				boolean usePxImage = (tagHelper.isTagged && printImage.getHyperlinkTooltip() != null) || wasHyperlinkSet;
-
 				tagHelper.startImage(printImage);
 				
+				PdfStructureEntry linkTag = tagHelper.getCurrentLinkTag();
+				if (linkTag != null)
+				{
+					float llx = printImage.getX() + getOffsetX();
+					float ury = pageFormat.getPageHeight() - printImage.getY() - getOffsetY();
+					float urx = llx + printImage.getWidth();
+					float lly = ury - printImage.getHeight();
+					imageProcessorResult.chunk.setLinkTag(linkTag, llx, lly, urx, ury);
+				}
+
 				PdfPhrase phrase = pdfProducer.createPhrase(imageProcessorResult.chunk);
 				
+				if (linkTag != null)
+				{
+					setHyperlinkInfo(imageProcessorResult.chunk, printImage);
+				}
+
 				int upperY = pageFormat.getPageHeight() - printImage.getY() - imageProcessor.topPadding - getOffsetY() - imageProcessorResult.yoffset;
 				int lowerX = printImage.getX() + imageProcessor.leftPadding + getOffsetX() + imageProcessorResult.xoffset;
 				phrase.go(
@@ -1670,19 +1679,30 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 					TextDirection.DEFAULT
 					);
 
-				if (usePxImage)
+				
+				if (linkTag == null)
 				{
-					PdfPhrase pxPhrase = pdfProducer.createPhrase(pxChunk);
-					pxPhrase.go(
-						printImage.getX() + getOffsetX(),
-						pageFormat.getPageHeight() - printImage.getY() - getOffsetY(),
-						printImage.getX() + getOffsetX() + printImage.getWidth(),
-						pageFormat.getPageHeight() - printImage.getY() - getOffsetY() - printImage.getHeight(),
-						0,
-						0,
-						PdfTextAlignment.LEFT,
-						TextDirection.DEFAULT
-						);
+					PdfImage pxImage = getPxImage();
+					pxImage.scaleAbsolute(printImage.getWidth(), printImage.getHeight());
+					PdfChunk pxChunk = pdfProducer.createChunk(pxImage);
+
+					boolean wasHyperlinkSet = setHyperlinkInfo(pxChunk, printImage);
+					boolean usePxImage = linkTag == null && ((tagHelper.isTagged && printImage.getHyperlinkTooltip() != null) || wasHyperlinkSet);
+
+					if (usePxImage)
+					{
+						PdfPhrase pxPhrase = pdfProducer.createPhrase(pxChunk);
+						pxPhrase.go(
+							printImage.getX() + getOffsetX(),
+							pageFormat.getPageHeight() - printImage.getY() - getOffsetY(),
+							printImage.getX() + getOffsetX() + printImage.getWidth(),
+							pageFormat.getPageHeight() - printImage.getY() - getOffsetY() - printImage.getHeight(),
+							0,
+							0,
+							PdfTextAlignment.LEFT,
+							TextDirection.DEFAULT
+							);
+					}
 				}
 	
 				tagHelper.endImage();
@@ -2326,6 +2346,16 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 			{
 				// only set anchor + bookmark for the first chunk in the text
 				setAnchor(chunk, textElement, textElement);
+
+				PdfStructureEntry linkTag = tagHelper.getCurrentLinkTag();
+				if (linkTag != null)
+				{
+					float llx = textElement.getX() + getOffsetX();
+					float ury = pageFormat.getPageHeight() - textElement.getY() - getOffsetY();
+					float urx = llx + textElement.getWidth();
+					float lly = ury - textElement.getHeight();
+					chunk.setLinkTag(linkTag, llx, lly, urx, ury);
+				}
 			}
 			
 			JRPrintHyperlink hyperlink = textElement;
@@ -2333,8 +2363,11 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 			{
 				hyperlink = (JRPrintHyperlink)attributes.get(JRTextAttribute.HYPERLINK);
 			}
-			
-			setHyperlinkInfo(chunk, hyperlink);
+
+			if (tagHelper.getCurrentLinkTag() == null || firstChunk)
+			{
+				setHyperlinkInfo(chunk, hyperlink);
+			}
 			phrase.add(chunk);
 
 			iterator.setIndex(runLimit);
