@@ -355,6 +355,22 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 		}
 	}
 	
+	protected void beginArtifact()
+	{
+		if (isTagged)
+		{
+			pdfStructure.beginArtifact();
+		}
+	}
+
+	protected void endArtifact()
+	{
+		if (isTagged)
+		{
+			pdfStructure.endArtifact();
+		}
+	}
+
 	protected void startPageAnchor()
 	{
 		if (isTagged)

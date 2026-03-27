@@ -1,7 +1,9 @@
 package com.lowagie.text.pdf;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,11 +14,15 @@ import java.util.Map;
  * must be a direct reference to the StructElem, not an array (which is
  * used for page /StructParents entries). This subclass overrides
  * {@link #buildTree()} to handle both types of entries correctly.
+ *
+ * Annotation /StructParent keys are assigned at build time to avoid
+ * collisions with page /StructParents values (which are assigned by
+ * OpenPDF using page indices 0, 1, 2, ...).
  */
 public class PdfStructureTreeRootUtil extends PdfStructureTreeRoot
 {
 
-	private final Map<Integer, PdfIndirectReference> annotationParents = new HashMap<>();
+	private final List<AnnotationParent> annotationParents = new ArrayList<>();
 
 	PdfStructureTreeRootUtil(PdfWriter writer)
 	{
@@ -39,51 +45,16 @@ public class PdfStructureTreeRootUtil extends PdfStructureTreeRoot
 	}
 
 	/**
-	 * Registers an annotation's StructParent entry.
+	 * Registers an annotation for /StructParent assignment.
+	 * The actual ParentTree key is assigned later in {@link #buildTree()}
+	 * to avoid collisions with page /StructParents values.
 	 *
-	 * @param key the ParentTree key (to be set as /StructParent on the annotation)
+	 * @param annotation the annotation dictionary (its /StructParent will be set at build time)
 	 * @param structElemReference the indirect reference to the StructElem
 	 */
-	public void addAnnotationParent(int key, PdfIndirectReference structElemReference)
+	public void addAnnotationParent(PdfAnnotation annotation, PdfIndirectReference structElemReference)
 	{
-		annotationParents.put(key, structElemReference);
-	}
-
-	/**
-	 * Returns the next available ParentTree key for annotation /StructParent values.
-	 */
-	public int nextParentTreeKey()
-	{
-		int maxKey = -1;
-
-		try
-		{
-			java.lang.reflect.Field parentTreeField = PdfStructureTreeRoot.class.getDeclaredField("parentTree");
-			parentTreeField.setAccessible(true);
-			@SuppressWarnings("unchecked")
-			Map<Integer, PdfArray> parentTree = (Map<Integer, PdfArray>) parentTreeField.get(this);
-			for (Integer key : parentTree.keySet())
-			{
-				if (key > maxKey)
-				{
-					maxKey = key;
-				}
-			}
-		}
-		catch (ReflectiveOperationException e)
-		{
-			throw new RuntimeException("Failed to access PdfStructureTreeRoot.parentTree", e);
-		}
-
-		for (Integer key : annotationParents.keySet())
-		{
-			if (key > maxKey)
-			{
-				maxKey = key;
-			}
-		}
-
-		return maxKey + 1;
+		annotationParents.add(new AnnotationParent(annotation, structElemReference));
 	}
 
 	@Override
@@ -108,13 +79,28 @@ public class PdfStructureTreeRootUtil extends PdfStructureTreeRoot
 		Map<Integer, PdfIndirectReference> numTree = new HashMap<>();
 
 		// Page-level entries: each value is a PdfArray of StructElem references
+		int maxPageKey = -1;
 		for (Map.Entry<Integer, PdfArray> entry : parentTree.entrySet())
 		{
 			numTree.put(entry.getKey(), writer.addToBody(entry.getValue()).getIndirectReference());
+			if (entry.getKey() > maxPageKey)
+			{
+				maxPageKey = entry.getKey();
+			}
 		}
 
-		// Annotation-level entries: each value is a direct StructElem reference
-		numTree.putAll(annotationParents);
+		// Annotation-level entries: assign keys starting after all page keys
+		// to avoid collisions with page StructParents values (0, 1, 2, ...).
+		// Annotations have already been written as part of their pages,
+		// so we re-write them with the updated StructParent value.
+		int nextKey = maxPageKey + 1;
+		for (AnnotationParent ap : annotationParents)
+		{
+			ap.annotation.put(PdfName.STRUCTPARENT, new PdfNumber(nextKey));
+			writer.addToBody(ap.annotation, ap.annotation.getIndirectReference());
+			numTree.put(nextKey, ap.structElemReference);
+			nextKey++;
+		}
 
 		PdfDictionary dicTree = PdfNumberTree.writeTree(numTree, writer);
 		if (dicTree != null)
@@ -147,6 +133,18 @@ public class PdfStructureTreeRootUtil extends PdfStructureTreeRoot
 		if (reference != null)
 		{
 			writer.addToBody(dictionary, reference);
+		}
+	}
+
+	private static class AnnotationParent
+	{
+		final PdfAnnotation annotation;
+		final PdfIndirectReference structElemReference;
+
+		AnnotationParent(PdfAnnotation annotation, PdfIndirectReference structElemReference)
+		{
+			this.annotation = annotation;
+			this.structElemReference = structElemReference;
 		}
 	}
 
