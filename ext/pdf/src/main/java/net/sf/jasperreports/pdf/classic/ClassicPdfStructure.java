@@ -151,4 +151,16 @@ public class ClassicPdfStructure implements PdfStructure
 		pdfProducer.getPdfContentByte().endMarkedContentSequence();
 	}
 
+	@Override
+	public void beginArtifact()
+	{
+		pdfProducer.getPdfContentByte().beginMarkedContentSequence(new PdfName("Artifact"));
+	}
+
+	@Override
+	public void endArtifact()
+	{
+		pdfProducer.getPdfContentByte().endMarkedContentSequence();
+	}
+
 }

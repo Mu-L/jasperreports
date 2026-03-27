@@ -1341,6 +1341,8 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 		float lineWidth = line.getLinePen().getLineWidth(); 
 		if (lineWidth > 0f)
 		{
+			tagHelper.beginArtifact();
+
 			preparePen(line.getLinePen(), LineCapStyle.BUTT);
 
 			if (line.getWidth() == 1)
@@ -1477,6 +1479,8 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 			resetPen();
 			pdfContent.setLineDash(0f);
 			pdfContent.setLineCap(LineCapStyle.PROJECTING_SQUARE);
+			
+			tagHelper.endArtifact();
 		}
 	}
 
@@ -1486,6 +1490,8 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 	 */
 	protected void exportRectangle(JRPrintRectangle rectangle)
 	{
+		tagHelper.beginArtifact();
+
 		pdfContent.setFillColor(rectangle.getBackcolor());
 		preparePen(rectangle.getLinePen(), LineCapStyle.PROJECTING_SQUARE);
 
@@ -1539,6 +1545,8 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 		resetPen();
 		pdfContent.resetFillColor();
 		pdfContent.setLineDash(0f);
+		
+		tagHelper.endArtifact();
 	}
 
 
@@ -1547,6 +1555,8 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 	 */
 	protected void exportEllipse(JRPrintEllipse ellipse)
 	{
+		tagHelper.beginArtifact();
+
 		pdfContent.setFillColor(ellipse.getBackcolor());
 		preparePen(ellipse.getLinePen(), LineCapStyle.PROJECTING_SQUARE);
 
@@ -1597,6 +1607,8 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 		pdfContent.resetFillColor();
 		
 		pdfContent.setLineDash(0f);
+		
+		tagHelper.endArtifact();
 	}
 
 
@@ -1607,6 +1619,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 	{
 		if (printImage.getMode() == ModeEnum.OPAQUE)
 		{
+			tagHelper.beginArtifact();
 			pdfContent.setFillColor(printImage.getBackcolor());
 			pdfContent.fillRectangle(
 				printImage.getX() + getOffsetX(),
@@ -1615,6 +1628,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 				- printImage.getHeight()
 				);
 			pdfContent.resetFillColor();
+			tagHelper.endArtifact();
 		}
 
 		InternalImageProcessor imageProcessor =
@@ -1710,6 +1724,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 		}
 
 
+		tagHelper.beginArtifact();
 		if (
 			printImage.getLineBox().getTopPen().getLineWidth() <= 0f &&
 			printImage.getLineBox().getLeftPen().getLineWidth() <= 0f &&
@@ -1730,6 +1745,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 				printImage
 				);
 		}
+		tagHelper.endArtifact();
 	}
 
 	private class InternalImageProcessor
@@ -2633,6 +2649,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 
 		if (text.getMode() == ModeEnum.OPAQUE)
 		{
+			tagHelper.beginArtifact();
 			Color backcolor = text.getBackcolor();
 			pdfContent.setFillColor(backcolor);
 			pdfContent.fillRectangle(
@@ -2642,6 +2659,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 				- textRenderer.getHeight()
 				);
 			pdfContent.resetFillColor();
+			tagHelper.endArtifact();
 		}
 		
 		int forecolorAlpha = getSingleForecolorAlpha(styledText);
@@ -2660,10 +2678,12 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 		pdfContent.transform(atrans);
 
 		/*   */
+		tagHelper.beginArtifact();
 		exportBox(
 			text.getLineBox(),
 			text
 			);
+		tagHelper.endArtifact();
 	}
 	
 	protected int getSingleForecolorAlpha(JRStyledText styledText)
@@ -3474,6 +3494,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 	{
 		if (frame.getMode() == ModeEnum.OPAQUE)
 		{
+			tagHelper.beginArtifact();
 			int x = frame.getX() + getOffsetX();
 			int y = frame.getY() + getOffsetY();
 
@@ -3488,6 +3509,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 				- frame.getHeight()
 				);
 			pdfContent.resetFillColor();
+			tagHelper.endArtifact();
 		}
 
 		setFrameElementsOffset(frame, false);
@@ -3500,7 +3522,9 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 			restoreElementOffsets();
 		}
 
+		tagHelper.beginArtifact();
 		exportBox(frame.getLineBox(), frame);
+		tagHelper.endArtifact();
 	}
 
 

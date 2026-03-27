@@ -40,4 +40,8 @@ public interface PdfStructure
 	
 	void endTag();
 
+	void beginArtifact();
+
+	void endArtifact();
+
 }
