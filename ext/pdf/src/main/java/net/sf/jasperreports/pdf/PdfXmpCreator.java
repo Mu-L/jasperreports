@@ -32,6 +32,7 @@ import com.adobe.internal.xmp.XMPConst;
 import com.adobe.internal.xmp.XMPException;
 import com.adobe.internal.xmp.XMPMeta;
 import com.adobe.internal.xmp.XMPMetaFactory;
+import com.adobe.internal.xmp.XMPSchemaRegistry;
 import com.adobe.internal.xmp.options.PropertyOptions;
 import com.adobe.internal.xmp.options.SerializeOptions;
 import com.lowagie.text.pdf.PdfDate;
@@ -78,9 +79,9 @@ public class PdfXmpCreator
 		return XMP_LIBRARY;
 	}
 
-	public static byte[] createXmpMetadata(PdfWriter pdfWriter, PdfaConformanceEnum conformance)
+	public static byte[] createXmpMetadata(PdfWriter pdfWriter, PdfaConformanceEnum conformance, boolean isTagged)
 	{
-		XmpWriter writer = new XmpWriter(pdfWriter, conformance);
+		XmpWriter writer = new XmpWriter(pdfWriter, conformance, isTagged);
 		return writer.createXmpMetadata();
 	}
 
@@ -116,16 +117,24 @@ class XmpWriter
 	private static final String XMP_MODIFY_DATE = "ModifyDate";
 
 	private static final String XMP_CREATOR_TOOL = "CreatorTool";
-	
+
+	private static final String NS_PDFUA_ID = "http://www.aiim.org/pdfua/ns/id/";
+
+	private static final String PDFUA_PART = "part";
+
+	private static final String PDFUA_PART_1 = "1";
+
 	private final PdfWriter pdfWriter;
 	private final PdfDictionary info;
 	private final PdfaConformanceEnum conformance;
-	
-	XmpWriter(PdfWriter pdfWriter, PdfaConformanceEnum conformance)
+	private final boolean isTagged;
+
+	XmpWriter(PdfWriter pdfWriter, PdfaConformanceEnum conformance, boolean isTagged)
 	{
 		this.pdfWriter = pdfWriter;
 		this.info = pdfWriter.getInfo();
 		this.conformance = conformance;
+		this.isTagged = isTagged;
 	}
 	
 	byte[] createXmpMetadata()
@@ -182,6 +191,13 @@ class XmpWriter
 			{
 				xmp.setProperty(XMPConst.NS_PDFA_ID, PDFA_PART, PDFA_PART_3);
 				xmp.setProperty(XMPConst.NS_PDFA_ID, PDFA_CONFORMANCE, PDFA_CONFORMANCE_U);
+			}
+
+			if (isTagged)
+			{
+				XMPSchemaRegistry registry = XMPMetaFactory.getSchemaRegistry();
+				registry.registerNamespace(NS_PDFUA_ID, "pdfuaid");
+				xmp.setProperty(NS_PDFUA_ID, PDFUA_PART, PDFUA_PART_1);
 			}
 
 			xmp.setProperty(XMPConst.NS_XMP, XMP_CREATE_DATE, ((PdfDate) info.get(PdfName.CREATIONDATE)).getW3CDate());

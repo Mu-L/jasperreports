@@ -1015,10 +1015,11 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 				gotPdfa = true;
 			}
 
-			if (gotPdfa) 
+			if (gotPdfa || tagHelper.isTagged)
 			{
-				pdfWriter.createXmpMetadata(title, subject, keywords);
-			} else 
+				pdfWriter.createXmpMetadata(title, subject, keywords, tagHelper.isTagged);
+			}
+			if (!gotPdfa)
 			{
 				pdfWriter.setRgbTransparencyBlending(true);
 			}
