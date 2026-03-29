@@ -109,4 +109,52 @@ public class ClassicStructureEntry implements PdfStructureEntry
 		}
 	}
 
+	@Override
+	public void setScope(String scope)
+	{
+		PdfObject existing = element.get(PdfName.A);
+		if (existing instanceof PdfArray)
+		{
+			PdfArray a = (PdfArray) existing;
+			PdfDictionary tableDict = findTableDict(a);
+			if (tableDict != null)
+			{
+				tableDict.put(pdfStructure.pdfName("Scope"), pdfStructure.pdfName(scope));
+			}
+			else
+			{
+				PdfDictionary dict = new PdfDictionary();
+				dict.put(pdfStructure.pdfName("Scope"), pdfStructure.pdfName(scope));
+				dict.put(PdfName.O, PdfName.TABLE);
+				a.add(dict);
+			}
+		}
+		else
+		{
+			PdfArray a = new PdfArray();
+			PdfDictionary dict = new PdfDictionary();
+			dict.put(pdfStructure.pdfName("Scope"), pdfStructure.pdfName(scope));
+			dict.put(PdfName.O, PdfName.TABLE);
+			a.add(dict);
+			element.put(PdfName.A, a);
+		}
+	}
+
+	private PdfDictionary findTableDict(PdfArray a)
+	{
+		for (int i = 0; i < a.size(); i++)
+		{
+			PdfObject item = a.getPdfObject(i);
+			if (item instanceof PdfDictionary)
+			{
+				PdfDictionary dict = (PdfDictionary) item;
+				if (PdfName.TABLE.equals(dict.get(PdfName.O)))
+				{
+					return dict;
+				}
+			}
+		}
+		return null;
+	}
+
 }

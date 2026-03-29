@@ -38,4 +38,6 @@ public interface PdfStructureEntry
 
 	void setBBox(float llx, float lly, float urx, float ury);
 
+	void setScope(String scope);
+
 }

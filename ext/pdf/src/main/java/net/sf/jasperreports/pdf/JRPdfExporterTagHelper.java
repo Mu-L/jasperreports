@@ -645,7 +645,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			prop = element.getPropertiesMap().getProperty(PdfConstants.PROPERTY_TAG_TH);
 			if (PdfConstants.TAG_START.equals(prop) || PdfConstants.TAG_FULL.equals(prop))
 			{
-				createThStartTag(element);
+				createThStartTag(element, "Column");
 			}
 
 			prop = element.getPropertiesMap().getProperty(PdfConstants.PROPERTY_TAG_TD);
@@ -655,13 +655,17 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			}
 			
 			prop = element.getPropertiesMap().getProperty(JRCellContents.PROPERTY_TYPE);
-			if (
-				JRCellContents.TYPE_CROSSTAB_HEADER.equals(prop) 
-				|| JRCellContents.TYPE_COLUMN_HEADER.equals(prop)
-				|| JRCellContents.TYPE_ROW_HEADER.equals(prop)
-				)
+			if (JRCellContents.TYPE_CROSSTAB_HEADER.equals(prop))
 			{
-				createThStartTag(element);
+				createThStartTag(element, "Both");
+			}
+			else if (JRCellContents.TYPE_COLUMN_HEADER.equals(prop))
+			{
+				createThStartTag(element, "Column");
+			}
+			else if (JRCellContents.TYPE_ROW_HEADER.equals(prop))
+			{
+				createThStartTag(element, "Row");
 			}
 			if (JRCellContents.TYPE_DATA.equals(prop))
 			{
@@ -748,7 +752,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	}
 		
 	
-	protected void createThStartTag(JRPrintElement element)
+	protected void createThStartTag(JRPrintElement element, String scope)
 	{
 		PdfStructureEntry tableHeaderTag = pdfStructure.createTag(tagStack.peek(), "TH");
 		tableHeaderTag.putArray("K");
@@ -756,6 +760,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 		isTagEmpty = true;
 		
 		createSpanTags(element, tableHeaderTag);
+		tableHeaderTag.setScope(scope);
 	}
 
 	
