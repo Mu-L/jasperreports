@@ -1661,15 +1661,16 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 			{
 				setAnchor(imageProcessorResult.chunk, printImage, printImage);
 
-				tagHelper.startImage(printImage);
-				
+				float llx = printImage.getX() + getOffsetX();
+				float ury = pageFormat.getPageHeight() - printImage.getY() - getOffsetY();
+				float urx = llx + printImage.getWidth();
+				float lly = ury - printImage.getHeight();
+
+				tagHelper.startImage(printImage, llx, lly, urx, ury);
+
 				PdfStructureEntry linkTag = tagHelper.getCurrentLinkTag();
 				if (linkTag != null)
 				{
-					float llx = printImage.getX() + getOffsetX();
-					float ury = pageFormat.getPageHeight() - printImage.getY() - getOffsetY();
-					float urx = llx + printImage.getWidth();
-					float lly = ury - printImage.getHeight();
 					imageProcessorResult.chunk.setLinkTag(linkTag, llx, lly, urx, ury);
 				}
 

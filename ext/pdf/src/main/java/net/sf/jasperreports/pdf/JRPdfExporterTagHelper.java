@@ -519,7 +519,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 		}
 	}
 
-	protected void startImage(JRPrintImage printImage)
+	protected void startImage(JRPrintImage printImage, float llx, float lly, float urx, float ury)
 	{
 		if (isTagged)
 		{
@@ -545,6 +545,8 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 				imageTag = pdfStructure.createTag(parent, "Figure");
 				currentLinkTag = pdfStructure.beginTag(imageTag, "Link");
 			}
+
+			imageTag.setBBox(llx, lly, urx, ury);
 
 			if (printImage.getHyperlinkTooltip() != null)
 			{
