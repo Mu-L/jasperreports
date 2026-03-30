@@ -33,6 +33,7 @@ import com.lowagie.text.pdf.PdfDictionary;
 import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfNumber;
 import com.lowagie.text.pdf.PdfObject;
+import com.lowagie.text.pdf.PdfString;
 import com.lowagie.text.pdf.PdfStructureElement;
 import com.lowagie.text.pdf.PdfStructureTreeRootUtil;
 
@@ -54,6 +55,7 @@ public class ClassicChunk implements PdfChunk
 	private float linkLly;
 	private float linkUrx;
 	private float linkUry;
+	private String linkContents;
 
 	public ClassicChunk(ClassicPdfProducer pdfProducer, Chunk chunk)
 	{
@@ -73,13 +75,14 @@ public class ClassicChunk implements PdfChunk
 	}
 
 	@Override
-	public void setLinkTag(PdfStructureEntry linkTag, float llx, float lly, float urx, float ury)
+	public void setLinkTag(PdfStructureEntry linkTag, float llx, float lly, float urx, float ury, String linkContents)
 	{
 		this.linkTag = linkTag;
 		this.linkLlx = llx;
 		this.linkLly = lly;
 		this.linkUrx = urx;
 		this.linkUry = ury;
+		this.linkContents = linkContents;
 	}
 
 	@Override
@@ -186,6 +189,11 @@ public class ClassicChunk implements PdfChunk
 	{
 		annotation.put(PdfName.BORDER, new PdfBorderArray(0, 0, 0));
 		annotation.remove(PdfName.C);
+
+		if (linkContents != null && linkContents.trim().length() > 0)
+		{
+			annotation.put(PdfName.CONTENTS, new PdfString(linkContents));
+		}
 
 		PdfStructureElement element = ((ClassicStructureEntry) linkTag).getElement();
 

@@ -1672,7 +1672,8 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 				PdfStructureEntry linkTag = tagHelper.getCurrentLinkTag();
 				if (linkTag != null)
 				{
-					imageProcessorResult.chunk.setLinkTag(linkTag, llx, lly, urx, ury);
+					String linkContents = printImage.getHyperlinkTooltip();
+					imageProcessorResult.chunk.setLinkTag(linkTag, llx, lly, urx, ury, linkContents);
 				}
 
 				PdfPhrase phrase = pdfProducer.createPhrase(imageProcessorResult.chunk);
@@ -2372,7 +2373,8 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 					float ury = pageFormat.getPageHeight() - textElement.getY() - getOffsetY();
 					float urx = llx + textElement.getWidth();
 					float lly = ury - textElement.getHeight();
-					chunk.setLinkTag(linkTag, llx, lly, urx, ury);
+					String linkContents = textElement.getHyperlinkTooltip() != null ? textElement.getHyperlinkTooltip() : text;
+					chunk.setLinkTag(linkTag, llx, lly, urx, ury, linkContents);
 				}
 			}
 			
