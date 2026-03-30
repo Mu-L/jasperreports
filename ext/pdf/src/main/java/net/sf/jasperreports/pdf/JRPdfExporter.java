@@ -2355,19 +2355,19 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 		AttributedCharacterIterator iterator = as.getIterator(null, beginIndex, endIndex);
 		Locale locale = getTextLocale(textElement);
 		 
-		boolean firstChunk = true; //FIXMENOW will have multiple anchors in case multiple paragraphs in same text element?
+		boolean firstChunk = true;
 		while (runLimit < endIndex && (runLimit = iterator.getRunLimit()) <= endIndex)
 		{
 			Map<Attribute,Object> attributes = iterator.getAttributes();
 			PdfTextChunk chunk = getChunk(attributes, text.substring(iterator.getIndex(), runLimit), locale);
-			
-			if (firstChunk)
+
+			if (firstChunk && tagHelper.isFirstTextParagraph())
 			{
 				// only set anchor + bookmark for the first chunk in the text
 				setAnchor(chunk, textElement, textElement);
 
 				PdfStructureEntry linkTag = tagHelper.getCurrentLinkTag();
-				if (linkTag != null)
+				if (linkTag != null && tagHelper.isFirstLinkParagraph())
 				{
 					float llx = textElement.getX() + getOffsetX();
 					float ury = pageFormat.getPageHeight() - textElement.getY() - getOffsetY();
@@ -2384,7 +2384,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 				hyperlink = (JRPrintHyperlink)attributes.get(JRTextAttribute.HYPERLINK);
 			}
 
-			if (tagHelper.getCurrentLinkTag() == null || firstChunk)
+			if (tagHelper.getCurrentLinkTag() == null || (firstChunk && tagHelper.isFirstLinkParagraph()))
 			{
 				setHyperlinkInfo(chunk, hyperlink);
 			}

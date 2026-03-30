@@ -293,6 +293,9 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected Stack<PdfStructureEntry> tagStack;
 	protected Stack<AccessibilityTagEnum> headerStack;
 	protected PdfStructureEntry currentLinkTag;
+	protected PdfStructureEntry elementLinkTag;
+	protected boolean firstLinkParagraph;
+	protected boolean firstTextParagraph;
 	protected boolean isTagEmpty = true;
 	protected int crtCrosstabRowY = -1;
 	protected boolean insideCrosstabCellFrame;
@@ -523,16 +526,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	{
 		if (isTagged)
 		{
-			PdfStructureEntry parent = null;
-			
-			if (headerStack.size() > 0)
-			{
-				parent = pdfStructure.createTag(tagStack.peek(), headerStack.peek().name());
-			}
-			else
-			{
-				parent = tagStack.peek();
-			}
+			PdfStructureEntry parent = tagStack.peek();
 			
 			PdfStructureEntry imageTag = null;
 
@@ -570,6 +564,16 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 		return currentLinkTag;
 	}
 
+	protected boolean isFirstTextParagraph()
+	{
+		return firstTextParagraph;
+	}
+
+	protected boolean isFirstLinkParagraph()
+	{
+		return firstLinkParagraph;
+	}
+
 	protected void startText(JRPrintText textElement)
 	{
 		startText(textElement, null);
@@ -585,26 +589,32 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 				// the actual text should be an attribute of the paragraph in styled text
 				actualText = textElement.getPropertiesMap().getProperty(PROPERTY_TAG_ATTRIBUTE_ACTUAL_TEXT);
             }
-			
-			PdfStructureEntry parent = null;
-			
-			if (headerStack.size() > 0)
-			{
-				parent = pdfStructure.createTag(tagStack.peek(), headerStack.peek().name());
-			}
-			else
-			{
-				parent = tagStack.peek();
-			}
+
+			PdfStructureEntry parent = tagStack.peek();
 
 			boolean isLink = textElement.getLinkType() != null;
 
+			if (isLink)
+			{
+				if (elementLinkTag == null)
+				{
+					elementLinkTag = pdfStructure.createTag(parent, "Link");
+					firstLinkParagraph = true;
+				}
+				else
+				{
+					firstLinkParagraph = false;
+				}
+				currentLinkTag = elementLinkTag;
+			}
+
+			String tagName = isLink || headerStack.size() > 0 ? null : "Text";
+			PdfStructureEntry mcParent = isLink ? elementLinkTag : parent;
+
 			PdfStructureEntry textEntry =
 				actualText == null
-				? pdfStructure.beginTag(parent, isLink ? "Link" : (headerStack.size() > 0 ? null : "Text"))
-				: pdfStructure.beginTag(parent, isLink ? "Link" : (headerStack.size() > 0 ? null : "Text"), actualText);
-
-			currentLinkTag = isLink ? textEntry : null;
+				? pdfStructure.beginTag(mcParent, tagName)
+				: pdfStructure.beginTag(mcParent, tagName, actualText);
 
 			if (textElement.hasProperties())
             {
@@ -621,13 +631,19 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 		if (isTagged)
 		{
 			pdfStructure.endTag();
-			currentLinkTag = null;
+			if (elementLinkTag == null)
+			{
+				currentLinkTag = null;
+			}
 			isTagEmpty = false;
+			firstTextParagraph = false;
 		}
 	}
 
 	protected void createStartTags(JRPrintElement element)
 	{
+		firstTextParagraph = true;
+
 		if (element.hasProperties())
 		{
 			String prop = element.getPropertiesMap().getProperty(PdfConstants.PROPERTY_TAG_TABLE);
@@ -727,9 +743,8 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			|| PdfConstants.TAG_START.equals(pdfTagPropValue) || PdfConstants.TAG_FULL.equals(pdfTagPropValue)
 			)
 		{
-//			PdfStructureEntry headingTag = pdfStructure.createTag(tagStack.peek(), accessibilityTag.name());
-//			headingTag.putArray("K");
-//			tagStack.push(headingTag);
+			PdfStructureEntry headingTag = pdfStructure.createTag(tagStack.peek(), accessibilityTag.name());
+			tagStack.push(headingTag);
 			headerStack.push(accessibilityTag);
 			isTagEmpty = true;
 		}
@@ -837,6 +852,9 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	
 	protected void createEndTags(JRPrintElement element)// throws DocumentException, IOException, JRException
 	{
+		elementLinkTag = null;
+		currentLinkTag = null;
+
 		if (element.hasProperties())
 		{
 			createEndTag(element, PROPERTY_TAG_NOTE);
@@ -926,7 +944,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 				pdfStructure.endTag();
 			}
 
-//			tagStack.pop();
+			tagStack.pop();
 			headerStack.pop();
 		}
 	}
