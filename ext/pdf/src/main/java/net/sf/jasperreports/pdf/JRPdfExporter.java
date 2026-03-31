@@ -1184,7 +1184,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 		
 		chunk.setLocalDestination(JR_PAGE_ANCHOR_PREFIX + reportIndex + "_" + (pageIndex + 1));
 
-		tagHelper.startPageAnchor();
+		tagHelper.beginArtifact();
 		
 		PdfPhrase phrase = pdfProducer.createPhrase(chunk);
 		
@@ -1199,7 +1199,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 			TextDirection.DEFAULT
 			);
 
-		tagHelper.endPageAnchor();
+		tagHelper.endArtifact();
 	}
 
 	/**

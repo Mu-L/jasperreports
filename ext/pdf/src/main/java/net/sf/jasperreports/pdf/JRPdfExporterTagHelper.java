@@ -374,22 +374,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 		}
 	}
 
-	protected void startPageAnchor()
-	{
-		if (isTagged)
-		{
-			pdfStructure.beginTag(documentTag, "Anchor");
-		}
-	}
-	
-	protected void endPageAnchor()
-	{
-		if (isTagged)
-		{
-			pdfStructure.endTag();
-		}
-	}
-
 	protected void startPage()
 	{
 		crtCrosstabRowY = -1;
@@ -993,6 +977,7 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	public void startLi(boolean noBullet) 
 	{
 		createStartTag(null, "LI");
+		createStartTag(null, "LBody");
 	}
 
 	@Override
@@ -1003,8 +988,9 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			pdfStructure.beginTag(tagStack.peek(), "Span");
 			pdfStructure.endTag();
 		}
-		
-		tagStack.pop();
+
+		tagStack.pop(); // pop LBody
+		tagStack.pop(); // pop LI
 	}
 
 	protected StyledTextListWriter getListWriter()
