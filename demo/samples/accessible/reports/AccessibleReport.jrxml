@@ -215,7 +215,6 @@
 				<element kind="textField" uuid="218ee333-139f-4d52-a444-4ea23f6265f7" x="0" y="0" width="300" height="15" forecolor="#008000" linkType="LocalPage">
 					<expression><![CDATA["Click here to go to the second page."]]></expression>
 					<hyperlinkPageExpression><![CDATA[2]]></hyperlinkPageExpression>
-					<propertyExpression name="net.sf.jasperreports.export.xls.sheet.name"><![CDATA["First Page"]]></propertyExpression>
 				</element>
 			</band>
 			<band height="20">
