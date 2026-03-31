@@ -584,6 +584,10 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			{
 				if (elementLinkTag == null)
 				{
+					if (headerStack.size() == 0)
+					{
+						parent = pdfStructure.createTag(parent, "Text");
+					}
 					elementLinkTag = pdfStructure.createTag(parent, "Link");
 					firstLinkParagraph = true;
 				}
