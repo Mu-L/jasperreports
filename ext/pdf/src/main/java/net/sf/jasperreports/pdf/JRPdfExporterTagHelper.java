@@ -415,6 +415,8 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 
 	protected void startElement(JRPrintElement element)
 	{
+		firstTextParagraph = true;
+
 		if (isTagged)
 		{
 			JRPrintFrame frame = element instanceof JRPrintFrame ? (JRPrintFrame) element : null;
@@ -636,14 +638,13 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 				currentLinkTag = null;
 			}
 			isTagEmpty = false;
-			firstTextParagraph = false;
 		}
+		
+		firstTextParagraph = false;
 	}
 
 	protected void createStartTags(JRPrintElement element)
 	{
-		firstTextParagraph = true;
-
 		if (element.hasProperties())
 		{
 			String prop = element.getPropertiesMap().getProperty(PdfConstants.PROPERTY_TAG_TABLE);
