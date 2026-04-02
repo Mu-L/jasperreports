@@ -163,4 +163,18 @@ public class ClassicPdfStructure implements PdfStructure
 		pdfProducer.getPdfContentByte().endMarkedContentSequence();
 	}
 
+	@Override
+	public void beginSpan(String actualText)
+	{
+		PdfDictionary markedContentProps = new PdfDictionary();
+		markedContentProps.put(PdfName.ACTUALTEXT, new PdfString(actualText, PdfObject.TEXT_UNICODE));
+		pdfProducer.getPdfContentByte().beginMarkedContentSequence(PdfName.SPAN, markedContentProps, true);
+	}
+
+	@Override
+	public void endSpan()
+	{
+		pdfProducer.getPdfContentByte().endMarkedContentSequence();
+	}
+
 }

@@ -277,12 +277,6 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			sinceVersion = PropertyConstants.VERSION_6_2_0
 			)
 	public static final String PROPERTY_TAG_H6 = JRPdfExporter.PDF_EXPORTER_PROPERTIES_PREFIX + "tag.h6";
-	@Property(
-			category = PropertyConstants.CATEGORY_EXPORT,
-			scopes = {PropertyScope.ELEMENT},
-			sinceVersion = PropertyConstants.VERSION_7_0_6
-			)
-	public static final String PROPERTY_TAG_ATTRIBUTE_ACTUAL_TEXT = JRPdfExporter.PDF_EXPORTER_PROPERTIES_PREFIX + "tag.attribute.ActualText";
 	
 	protected JRPdfExporter exporter;
 
@@ -302,6 +296,8 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	protected boolean isDataCellPrinted;
 
 	protected boolean isTagged;
+	protected boolean isArtifactText;
+	protected boolean isArtifactSpan;
 	protected String language;
 
 	/**
@@ -569,50 +565,61 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	{
 		if (isTagged)
 		{
-			if (textElement.hasProperties() && textElement.getPropertiesMap().containsProperty(PROPERTY_TAG_ATTRIBUTE_ACTUAL_TEXT))
-            {
+			if (textElement.hasProperties() && textElement.getPropertiesMap().containsProperty(AccessibilityUtil.PROPERTY_TAG_ATTRIBUTE_ACTUAL_TEXT))
+			{
 				//FIXME the actual text repeats for each paragraph in multi-paragraph text elements, which is not good;
 				// the actual text should be an attribute of the paragraph in styled text
-				actualText = textElement.getPropertiesMap().getProperty(PROPERTY_TAG_ATTRIBUTE_ACTUAL_TEXT);
-            }
-
-			PdfStructureEntry parent = tagStack.peek();
-
-			boolean isLink = textElement.getLinkType() != null;
-
-			if (isLink)
-			{
-				if (elementLinkTag == null)
-				{
-					if (headerStack.size() == 0)
-					{
-						parent = pdfStructure.createTag(parent, "Text");
-					}
-					elementLinkTag = pdfStructure.createTag(parent, "Link");
-					firstLinkParagraph = true;
-				}
-				else
-				{
-					firstLinkParagraph = false;
-				}
-				currentLinkTag = elementLinkTag;
+				actualText = textElement.getPropertiesMap().getProperty(AccessibilityUtil.PROPERTY_TAG_ATTRIBUTE_ACTUAL_TEXT);
 			}
 
-			String tagName = isLink || headerStack.size() > 0 ? null : "Text";
-			PdfStructureEntry mcParent = isLink ? elementLinkTag : parent;
+			if (isArtifactText)
+			{
+				if (actualText != null)
+				{
+					pdfStructure.beginSpan(actualText);
+					isArtifactSpan = true;
+				}
+			}
+			else
+			{
+				PdfStructureEntry parent = tagStack.peek();
 
-			PdfStructureEntry textEntry =
-				actualText == null
-				? pdfStructure.beginTag(mcParent, tagName)
-				: pdfStructure.beginTag(mcParent, tagName, actualText);
+				boolean isLink = textElement.getLinkType() != null;
 
-			if (textElement.hasProperties())
-            {
-                if (textElement.getPropertiesMap().containsProperty(PdfExporterConfiguration.PROPERTY_TAG_LANGUAGE))
-                {
-                	textEntry.putString("Lang", textElement.getPropertiesMap().getProperty(PdfExporterConfiguration.PROPERTY_TAG_LANGUAGE));
-                }
-            }
+				if (isLink)
+				{
+					if (elementLinkTag == null)
+					{
+						if (headerStack.size() == 0)
+						{
+							parent = pdfStructure.createTag(parent, "Text");
+						}
+						elementLinkTag = pdfStructure.createTag(parent, "Link");
+						firstLinkParagraph = true;
+					}
+					else
+					{
+						firstLinkParagraph = false;
+					}
+					currentLinkTag = elementLinkTag;
+				}
+
+				String tagName = isLink || headerStack.size() > 0 ? null : "Text";
+				PdfStructureEntry mcParent = isLink ? elementLinkTag : parent;
+
+				PdfStructureEntry textEntry =
+					actualText == null
+					? pdfStructure.beginTag(mcParent, tagName)
+					: pdfStructure.beginTag(mcParent, tagName, actualText);
+
+				if (textElement.hasProperties())
+				{
+					if (textElement.getPropertiesMap().containsProperty(PdfExporterConfiguration.PROPERTY_TAG_LANGUAGE))
+					{
+						textEntry.putString("Lang", textElement.getPropertiesMap().getProperty(PdfExporterConfiguration.PROPERTY_TAG_LANGUAGE));
+					}
+				}
+			}
 		}
 	}
 
@@ -620,12 +627,23 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	{
 		if (isTagged)
 		{
-			pdfStructure.endTag();
-			if (elementLinkTag == null)
+			if (isArtifactText)
 			{
-				currentLinkTag = null;
+				if (isArtifactSpan)
+				{
+					pdfStructure.endSpan();
+					isArtifactSpan = false;
+				}
 			}
-			isTagEmpty = false;
+			else
+			{
+				pdfStructure.endTag();
+				if (elementLinkTag == null)
+				{
+					currentLinkTag = null;
+				}
+				isTagEmpty = false;
+			}
 		}
 		
 		firstTextParagraph = false;
@@ -718,6 +736,13 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 			if (PdfConstants.TAG_START.equals(prop) || PdfConstants.TAG_FULL.equals(prop))
 			{
 				createStartTag(element, "Note");
+			}
+
+			if (AccessibilityTagEnum.ARTIFACT.getName().equals(
+					element.getPropertiesMap().getProperty(AccessibilityUtil.PROPERTY_ACCESSIBILITY_TAG)))
+			{
+				isArtifactText = true;
+				pdfStructure.beginArtifact();
 			}
 		}
 	}
@@ -841,6 +866,12 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 	
 	protected void createEndTags(JRPrintElement element)// throws DocumentException, IOException, JRException
 	{
+		if (isArtifactText)
+		{
+			isArtifactText = false;
+			pdfStructure.endArtifact();
+		}
+
 		elementLinkTag = null;
 		currentLinkTag = null;
 

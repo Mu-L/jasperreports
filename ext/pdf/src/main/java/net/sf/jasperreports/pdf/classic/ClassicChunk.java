@@ -189,6 +189,7 @@ public class ClassicChunk implements PdfChunk
 	{
 		annotation.put(PdfName.BORDER, new PdfBorderArray(0, 0, 0));
 		annotation.remove(PdfName.C);
+		annotation.put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
 
 		if (linkContents != null && linkContents.trim().length() > 0)
 		{

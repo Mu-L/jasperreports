@@ -44,4 +44,8 @@ public interface PdfStructure
 
 	void endArtifact();
 
+	void beginSpan(String actualText);
+
+	void endSpan();
+
 }
