@@ -1400,6 +1400,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 			
 			int[] rowYOffsets = computeOffsets(rowHeadersData, rowGroups, false);
 			rowBreakable = computeBreakableHeaders(rowHeadersData, rowGroups, rowYOffsets, false, false);
+			applyKeepTogether(rowHeadersData, rowBreakable);
 			rowCount = computeCounts(rowHeadersData);
 			
 			spanHeaders = new HeaderCell[rowGroups.length - 1];
@@ -1486,6 +1487,35 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 			}
 
 			return breakable;
+		}
+
+		/**
+		 * Applies the keepTogether flag for row groups that have it set.
+		 * This method only sets breakable entries to false, never to true,
+		 * so it does not interfere with the values already computed by
+		 * computeBreakableHeaders; it only adds further restrictions on
+		 * top of the existing ones.
+		 */
+		protected void applyKeepTogether(HeaderCell[][] headersData, boolean[] breakable)
+		{
+			for (int j = 0; j < rowGroups.length; ++j)
+			{
+				if (rowGroups[j].isKeepTogether())
+				{
+					for (int i = 0; i < headersData[0].length; i++)
+					{
+						HeaderCell header = headersData[j][i];
+						if (header != null && !header.isTotal() && header.getLevelSpan() > 1)
+						{
+							int span = header.getLevelSpan();
+							for (int k = i + 1; k < i + span; ++k)
+							{
+								breakable[k] = false;
+							}
+						}
+					}
+				}
+			}
 		}
 
 		private int[] computeCounts(HeaderCell[][] headersData)
