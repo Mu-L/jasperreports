@@ -30,6 +30,8 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import net.sf.jasperreports.crosstabs.design.JRDesignCrosstabRowGroup;
 import net.sf.jasperreports.crosstabs.type.CrosstabRowPositionEnum;
+import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.jackson.util.JRXmlSince;
 
 
 /**
@@ -79,6 +81,7 @@ public interface JRCrosstabRowGroup extends JRCrosstabGroup
 	 *
 	 * @return whether the row group should be kept together
 	 */
+	@JRXmlSince(JRConstants.VERSION_7_0_7)
 	@JsonInclude(Include.NON_DEFAULT)
 	@JacksonXmlProperty(isAttribute = true)
 	public boolean isKeepTogether();
