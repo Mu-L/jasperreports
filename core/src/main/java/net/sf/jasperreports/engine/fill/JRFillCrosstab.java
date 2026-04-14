@@ -590,7 +590,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 		
 		BucketOrderer orderer = createOrderer(group, groupIndex, comparator);
 		BucketDefinition bucketDefinition = new BucketDefinition(bucket.getValueClass(),
-				orderer, comparator, bucket.getOrder(), 
+				orderer, comparator, BucketOrder.getValueOrDefault(bucket.getOrder()), 
 				group.getTotalPosition());
 		
 		Boolean mergeHeaderCells = group.getMergeHeaderCells();
@@ -603,11 +603,12 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 	protected BucketOrderer createOrderer(JRCrosstabGroup group, int groupIndex, Comparator<Object> bucketComparator)
 	{
 		BucketOrderer orderer = null;
+		BucketOrder bucketOrder = BucketOrder.getValueOrDefault(group.getBucket().getOrder());
 		
 		if (group instanceof JRCrosstabRowGroup
 				&& orderByColumnInfo != null && orderByColumnInfo.getOrder() != null
 				// ordering by column only applies to nesting groups is they are not already ordered
-				&& (groupIndex == rowGroups.length - 1 || group.getBucket().getOrder() == BucketOrder.NONE))
+				&& (groupIndex == rowGroups.length - 1 || bucketOrder == BucketOrder.NONE))
 		{
 			orderer = new OrderByColumnOrderer(orderByColumnInfo);
 		}
@@ -616,7 +617,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 		{
 			JRCrosstabBucket bucket = group.getBucket();
 			JRExpression orderByExpression = bucket.getOrderByExpression();
-			if (orderByExpression != null && bucket.getOrder() != BucketOrder.NONE)
+			if (orderByExpression != null && bucketOrder != BucketOrder.NONE)
 			{
 				if (log.isDebugEnabled())
 				{
@@ -624,7 +625,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 				}
 				
 				// when we have an order by expression, the comparator is applied to order values
-				Comparator<Object> orderValueComparator = BucketDefinition.createOrderComparator(bucketComparator, bucket.getOrder());
+				Comparator<Object> orderValueComparator = BucketDefinition.createOrderComparator(bucketComparator, bucketOrder);
 				orderer = new BucketExpressionOrderer(orderByExpression, orderValueComparator);
 			}
 		}

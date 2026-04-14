@@ -44,7 +44,7 @@ public class JRDesignCrosstabRowGroup extends JRDesignCrosstabGroup implements J
 	public static final String PROPERTY_KEEP_TOGETHER = "keepTogether";
 
 	protected int width;
-	protected CrosstabRowPositionEnum position = CrosstabRowPositionEnum.TOP;
+	protected CrosstabRowPositionEnum position;
 	protected boolean keepTogether;
 
 	public JRDesignCrosstabRowGroup()

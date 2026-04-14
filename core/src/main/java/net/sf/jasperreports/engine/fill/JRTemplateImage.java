@@ -66,7 +66,7 @@ public class JRTemplateImage extends JRTemplateGraphicElement implements JRCommo
 	private HorizontalImageAlignEnum horizontalImageAlign;
 	private VerticalImageAlignEnum verticalImageAlign;
 	protected boolean isLazy;
-	protected OnErrorTypeEnum onErrorType = OnErrorTypeEnum.ERROR;
+	protected OnErrorTypeEnum onErrorType;
 	private String linkType;
 	private String linkTarget;
 

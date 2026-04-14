@@ -39,7 +39,7 @@ public class JRBaseCrosstabRowGroup extends JRBaseCrosstabGroup implements JRCro
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
 	protected int width;
-	protected CrosstabRowPositionEnum position = CrosstabRowPositionEnum.TOP;
+	protected CrosstabRowPositionEnum position;
 	protected boolean keepTogether;
 
 	public JRBaseCrosstabRowGroup(JRCrosstabRowGroup group, JRBaseObjectFactory factory)
