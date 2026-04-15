@@ -60,7 +60,7 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	protected Renderable renderable;
 	protected ScaleImageEnum scaleImage;
 	protected RotationEnum rotation;
-	protected Boolean isUsingCache = Boolean.TRUE;
+	protected Boolean isUsingCache;
 	protected HorizontalImageAlignEnum horizontalImageAlign;
 	protected VerticalImageAlignEnum verticalImageAlign;
 	protected OnErrorTypeEnum onErrorType;

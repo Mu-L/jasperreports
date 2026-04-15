@@ -62,7 +62,7 @@ public class JRTemplateImage extends JRTemplateGraphicElement implements JRCommo
 	 */
 	private ScaleImageEnum scaleImage;
 	private RotationEnum rotation;
-	private Boolean isUsingCache = Boolean.TRUE;
+	private Boolean isUsingCache;
 	private HorizontalImageAlignEnum horizontalImageAlign;
 	private VerticalImageAlignEnum verticalImageAlign;
 	protected boolean isLazy;
