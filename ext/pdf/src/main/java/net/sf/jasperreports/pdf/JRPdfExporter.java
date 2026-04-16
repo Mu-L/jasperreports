@@ -535,6 +535,15 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 		)
 	public static final String LEGACY_TEXT_MEASURING_FIX = PDF_EXPORTER_PROPERTIES_PREFIX + "legacy.text.measuring.fix";
 	
+	@Property(
+		category = PropertyConstants.CATEGORY_EXPORT,
+		scopes = {PropertyScope.GLOBAL, PropertyScope.CONTEXT, PropertyScope.REPORT},
+		sinceVersion = PropertyConstants.VERSION_7_0_7,
+		valueType = Boolean.class,
+		defaultValue = PropertyConstants.BOOLEAN_FALSE
+		)
+	public static final String LEGACY_PAGE_ANCHORS = PDF_EXPORTER_PROPERTIES_PREFIX + "legacy.page.anchors";
+	
 	/**
 	 * The exporter key, as used in
 	 * {@link GenericElementHandlerEnviroment#getElementHandler(JRGenericElementType, String)}.
@@ -1082,6 +1091,8 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 
 				setPageSize(null);
 				
+				boolean legacyPageAnchor = propertiesUtil.getBooleanProperty(jasperPrint, LEGACY_PAGE_ANCHORS, false);
+				
 				boolean pageExported = false;
 				List<JRPrintPage> pages = jasperPrint.getPages();
 				if (pages != null && pages.size() > 0)
@@ -1127,7 +1138,10 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 
 						pdfProducer.getPdfContent().setLineCap(LineCapStyle.PROJECTING_SQUARE);
 
-						writePageAnchor(pageIndex);
+						if (legacyPageAnchor)
+						{
+							writePageAnchor(pageIndex);
+						}
 						
 						crtDocumentPageNumber++;
 
