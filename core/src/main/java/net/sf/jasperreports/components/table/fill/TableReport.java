@@ -1009,14 +1009,15 @@ public class TableReport implements JRReport
 						{
 							if (
 								sortField.getName().equals(fieldOrVariableName)
-								&& sortField.getType() == columnType
+								&& SortFieldTypeEnum.getValueOrDefault(sortField.getType()) == columnType
 								)
 							{
+								SortOrderEnum order = SortOrderEnum.getValueOrDefault(sortField.getOrder());
 								suffix += 
 									"" 
-									+ (sortField.getOrder() == SortOrderEnum.ASCENDING 
+									+ (order == SortOrderEnum.ASCENDING 
 										? propertiesUtil.getProperty(PROPERTY_UP_ARROW_CHAR)
-										: (sortField.getOrder() == SortOrderEnum.DESCENDING 
+										: (order == SortOrderEnum.DESCENDING 
 											? propertiesUtil.getProperty(PROPERTY_DOWN_ARROW_CHAR)
 											: ""));
 							}
