@@ -10,6 +10,7 @@
 	<artifactId>jasperreports-samples-maven</artifactId>
 	<packaging>jar</packaging>
 	<properties>
+		<jasperreports.root.dir>${basedir}/../../../</jasperreports.root.dir>
 		<maven.buildNumber.doCheck>false</maven.buildNumber.doCheck>
 		<maven.deploy.skip>true</maven.deploy.skip>
 		<maven.install.skip>true</maven.install.skip>
