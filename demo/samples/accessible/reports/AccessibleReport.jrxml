@@ -9,6 +9,7 @@
 	<property name="net.sf.jasperreports.export.pdf.display.metadata.title" value="true"/>
 	<property name="net.sf.jasperreports.export.pdf.bookmarks.enabled" value="true"/>
 	<property name="net.sf.jasperreports.components.table.accessible" value="true"/>
+	<property name="net.sf.jasperreports.export.pdfa.icc.profile.path" value="sRGB_IEC61966-2-1_no_black_scaling.icc"/>
 	<style name="Sans_Normal" default="true" fontName="DejaVu Sans" fontSize="10.0" bold="false" italic="false" underline="false" strikeThrough="false"/>
 	<style name="Description" mode="Opaque" backcolor="#EEEEEE">
 		<box>
