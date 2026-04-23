@@ -1776,6 +1776,7 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 	{
 		tableHelper.getCellHelper().exportHeader(frame, gridCell);
 //		tableHelper.getCellHelper().exportProps(gridCell);
+		tableHelper.getParagraphHelper().exportEmptyParagraph();
 
 		boolean appendBackcolor =
 			frame.getMode() == ModeEnum.OPAQUE
