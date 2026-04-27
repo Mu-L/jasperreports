@@ -95,6 +95,12 @@ public class DocxStyleHelper extends BaseHelper
 			
 			if (reportIndex == 0)
 			{
+				// does not hurt always creating the Header style, even if no background is exported as header
+				write(" <w:style w:type=\"paragraph\" w:styleId=\"Header\">\n");
+				write("  <w:name w:val=\"header\" />\n");
+				write("  <w:qFormat />\n");
+				write(" </w:style>\n");
+
 				JRDesignStyle style = new JRDesignStyle(jasperPrint.getDefaultStyleProvider());
 				style.setName("EMPTY_CELL_STYLE");
 				style.setParentStyle(jasperPrint.getDefaultStyle());
